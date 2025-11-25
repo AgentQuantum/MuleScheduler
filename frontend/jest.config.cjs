@@ -17,8 +17,14 @@ module.exports = {
   ],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: 'tsconfig.test.json'
+      tsconfig: 'tsconfig.test.json',
+      useESM: false
     }]
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json']
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  moduleDirectories: ['node_modules', 'src'],
+  // Transform ESM modules from node_modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(@fullcalendar|preact)/)'
+  ]
 }
