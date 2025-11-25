@@ -63,6 +63,11 @@ def test_admin(test_app):
 def test_location(test_app):
     """Create a test location."""
     with test_app.app_context():
+        # Check if location already exists
+        existing = Location.query.filter_by(name='Test Location').first()
+        if existing:
+            return existing
+        
         location = Location(
             name='Test Location',
             description='A test location',
@@ -76,6 +81,15 @@ def test_location(test_app):
 def test_time_slot(test_app):
     """Create a test time slot (Monday, 9am-5pm)."""
     with test_app.app_context():
+        # Check if time slot already exists
+        existing = TimeSlot.query.filter_by(
+            day_of_week=0,
+            start_time=time(9, 0),
+            end_time=time(17, 0)
+        ).first()
+        if existing:
+            return existing
+        
         time_slot = TimeSlot(
             day_of_week=0,  # Monday
             start_time=time(9, 0),
