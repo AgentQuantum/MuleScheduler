@@ -1,37 +1,9 @@
 """
 Pytest configuration and fixtures for MuleScheduler tests.
-
-This file is intentionally self-contained and avoids relying on Python's
-import search path. Instead, it loads `app.py` and `models.py` directly
-from the backend directory using importlib. This prevents
-`ModuleNotFoundError: No module named 'app'` in CI.
 """
-import os
 import pytest
-from importlib.machinery import SourceFileLoader
-
-# Resolve the absolute path to the backend directory
-BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Load backend/app.py explicitly as a module
-app_module = SourceFileLoader(
-    "mulescheduler_app", os.path.join(BACKEND_DIR, "app.py")
-).load_module()
-
-# Load backend/models.py explicitly as a module
-models_module = SourceFileLoader(
-    "mulescheduler_models", os.path.join(BACKEND_DIR, "models.py")
-).load_module()
-
-# Export the objects we need from those modules
-app = app_module.app
-db = app_module.db
-
-User = models_module.User
-Location = models_module.Location
-TimeSlot = models_module.TimeSlot
-GlobalSettings = models_module.GlobalSettings
-
+from app import app, db
+from models import User, Location, TimeSlot, GlobalSettings
 from datetime import time
 
 @pytest.fixture
@@ -91,11 +63,6 @@ def test_admin(test_app):
 def test_location(test_app):
     """Create a test location."""
     with test_app.app_context():
-        # Check if location already exists
-        existing = Location.query.filter_by(name='Test Location').first()
-        if existing:
-            return existing
-        
         location = Location(
             name='Test Location',
             description='A test location',
@@ -109,15 +76,6 @@ def test_location(test_app):
 def test_time_slot(test_app):
     """Create a test time slot (Monday, 9am-5pm)."""
     with test_app.app_context():
-        # Check if time slot already exists
-        existing = TimeSlot.query.filter_by(
-            day_of_week=0,
-            start_time=time(9, 0),
-            end_time=time(17, 0)
-        ).first()
-        if existing:
-            return existing
-        
         time_slot = TimeSlot(
             day_of_week=0,  # Monday
             start_time=time(9, 0),

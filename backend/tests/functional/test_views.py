@@ -2,9 +2,8 @@
 Functional tests for API routes/views.
 """
 import pytest
-from models import User, Location, TimeSlot, Assignment
-from database import db
-from datetime import date, time, timedelta
+from datetime import date, timedelta
+
 
 class TestUsersEndpoints:
     """Test /api/users endpoints."""
@@ -39,6 +38,7 @@ class TestUsersEndpoints:
         
         assert response.status_code == 403
 
+
 class TestLocationsEndpoints:
     """Test /api/locations endpoints."""
     
@@ -50,7 +50,7 @@ class TestLocationsEndpoints:
         data = response.get_json()
         assert isinstance(data, list)
         assert len(data) >= 1
-        assert any(loc['name'] == test_location.name for loc in data)
+        assert any(loc['name'] == test_location['name'] for loc in data)
     
     def test_create_location_as_admin(self, client, admin_token):
         """Test POST /api/locations creates a new location."""
@@ -78,7 +78,7 @@ class TestLocationsEndpoints:
     
     def test_update_location_as_admin(self, client, admin_token, test_location):
         """Test PUT /api/locations/:id updates location."""
-        response = client.put(f'/api/locations/{test_location.id}',
+        response = client.put(f'/api/locations/{test_location["id"]}',
             headers={'Authorization': f'Bearer {admin_token}'},
             json={'name': 'Updated Location'}
         )
@@ -89,7 +89,7 @@ class TestLocationsEndpoints:
     
     def test_delete_location_as_admin(self, client, admin_token, test_location):
         """Test DELETE /api/locations/:id soft-deletes location."""
-        response = client.delete(f'/api/locations/{test_location.id}',
+        response = client.delete(f'/api/locations/{test_location["id"]}',
             headers={'Authorization': f'Bearer {admin_token}'}
         )
         
@@ -98,7 +98,8 @@ class TestLocationsEndpoints:
         # Verify location is soft-deleted (is_active = False)
         get_response = client.get('/api/locations')
         locations = get_response.get_json()
-        assert not any(loc['id'] == test_location.id and loc['is_active'] for loc in locations)
+        assert not any(loc['id'] == test_location['id'] and loc['is_active'] for loc in locations)
+
 
 class TestAssignmentsEndpoints:
     """Test /api/assignments endpoints."""
@@ -112,9 +113,9 @@ class TestAssignmentsEndpoints:
             # Create an assignment for the test user
             week_start = date.today() - timedelta(days=date.today().weekday())
             assignment = Assignment(
-                user_id=test_user.id,
-                location_id=test_location.id,
-                time_slot_id=test_time_slot.id,
+                user_id=test_user['id'],
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
                 week_start_date=week_start
             )
             db.session.add(assignment)
@@ -130,7 +131,7 @@ class TestAssignmentsEndpoints:
         assert isinstance(data, list)
         # Should only return assignments for the authenticated user
         for assignment in data:
-            assert assignment['user_id'] == test_user.id
+            assert assignment['user_id'] == test_user['id']
     
     def test_get_assignments_missing_week_start(self, client, auth_token):
         """Test GET /api/assignments without week_start returns 400."""
@@ -139,4 +140,3 @@ class TestAssignmentsEndpoints:
         )
         
         assert response.status_code == 400
-

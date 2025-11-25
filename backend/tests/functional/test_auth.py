@@ -2,7 +2,7 @@
 Functional tests for authentication endpoints.
 """
 import pytest
-from models import User
+
 
 class TestAuthLogin:
     """Test /api/auth/login endpoint."""
@@ -24,14 +24,14 @@ class TestAuthLogin:
     def test_login_with_existing_user(self, client, test_user):
         """Test login with existing user returns token."""
         response = client.post('/api/auth/login', json={
-            'email': test_user.email,
-            'role': test_user.role
+            'email': test_user['email'],
+            'role': test_user['role']
         })
         
         assert response.status_code == 200
         data = response.get_json()
         assert 'token' in data
-        assert data['user']['id'] == test_user.id
+        assert data['user']['id'] == test_user['id']
     
     def test_login_missing_email(self, client):
         """Test login without email returns 400."""
@@ -45,16 +45,17 @@ class TestAuthLogin:
     
     def test_login_updates_role(self, client, test_user):
         """Test login updates user role if different."""
-        assert test_user.role == 'user'
+        assert test_user['role'] == 'user'
         
         response = client.post('/api/auth/login', json={
-            'email': test_user.email,
+            'email': test_user['email'],
             'role': 'admin'
         })
         
         assert response.status_code == 200
         data = response.get_json()
         assert data['user']['role'] == 'admin'
+
 
 class TestAuthMe:
     """Test /api/auth/me endpoint."""
@@ -86,4 +87,3 @@ class TestAuthMe:
         })
         
         assert response.status_code == 401
-
