@@ -1,19 +1,37 @@
 """
 Pytest configuration and fixtures for MuleScheduler tests.
+
+This file is intentionally self-contained and avoids relying on Python's
+import search path. Instead, it loads `app.py` and `models.py` directly
+from the backend directory using importlib. This prevents
+`ModuleNotFoundError: No module named 'app'` in CI.
 """
-import sys
 import os
 import pytest
+from importlib.machinery import SourceFileLoader
 
-# Add backend directory to Python path so imports work
-# conftest.py is in backend/tests/, so we need to go up one level to backend/
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
+# Resolve the absolute path to the backend directory
+BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Now we can import from the backend directory
-from app import app, db
-from models import User, Location, TimeSlot, GlobalSettings
+# Load backend/app.py explicitly as a module
+app_module = SourceFileLoader(
+    "mulescheduler_app", os.path.join(BACKEND_DIR, "app.py")
+).load_module()
+
+# Load backend/models.py explicitly as a module
+models_module = SourceFileLoader(
+    "mulescheduler_models", os.path.join(BACKEND_DIR, "models.py")
+).load_module()
+
+# Export the objects we need from those modules
+app = app_module.app
+db = app_module.db
+
+User = models_module.User
+Location = models_module.Location
+TimeSlot = models_module.TimeSlot
+GlobalSettings = models_module.GlobalSettings
+
 from datetime import time
 
 @pytest.fixture
