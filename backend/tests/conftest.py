@@ -1,7 +1,13 @@
 """
 Pytest configuration and fixtures for MuleScheduler tests.
 """
+import sys
+import os
 import pytest
+
+# Add parent directory to path so we can import app and models
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from app import app, db
 from models import User, Location, TimeSlot, GlobalSettings
 from datetime import time
