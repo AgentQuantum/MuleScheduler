@@ -11,9 +11,6 @@ backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
-# Change to backend directory so imports work correctly
-os.chdir(backend_dir)
-
 # Now we can import from the backend directory
 from app import app, db
 from models import User, Location, TimeSlot, GlobalSettings
