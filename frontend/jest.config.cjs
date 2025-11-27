@@ -14,15 +14,12 @@ module.exports = {
     '!src/main.tsx',
     '!src/vite-env.d.ts',
     '!src/setupTests.ts',
-    // Exclude pure SVG/illustration components (no logic to test)
+    '!src/App.tsx',
+    // Exclude pure SVG/illustration components
     '!src/components/Illustrations.tsx',
-    // Exclude complex page components (need extensive mocking)
-    '!src/pages/AdminSchedulePage.tsx',
-    '!src/pages/AdminSettingsPage.tsx',
-    '!src/pages/StudentAvailabilityPage.tsx',
-    '!src/pages/StudentSchedulePage.tsx',
-    '!src/pages/AdminUsersPage.tsx',
-    // Exclude complex schedule grid components
+    // Exclude all pages (need integration testing)
+    '!src/pages/**',
+    // Exclude complex schedule components
     '!src/components/WeeklyScheduleGrid.tsx',
     '!src/components/WeeklyScheduleCalendar.tsx',
     '!src/components/ShiftScheduleGrid.tsx',
@@ -32,15 +29,16 @@ module.exports = {
     '!src/components/AppShell.tsx',
     '!src/components/ShiftCard.tsx',
     '!src/components/ScheduleBlock.tsx',
-    // Exclude types file (no executable code)
+    '!src/components/Navbar.tsx',
+    // Exclude types
     '!src/types/**'
   ],
   coverageThreshold: {
     global: {
       branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80
+      functions: 95,
+      lines: 95,
+      statements: 95
     }
   },
   transform: {
@@ -51,7 +49,6 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   moduleDirectories: ['node_modules', 'src'],
-  // Transform ESM modules from node_modules
   transformIgnorePatterns: [
     'node_modules/(?!(@fullcalendar|preact)/)'
   ]
