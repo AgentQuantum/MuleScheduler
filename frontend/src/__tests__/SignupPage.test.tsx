@@ -60,8 +60,8 @@ describe('SignupPage', () => {
     // Check for form elements
     expect(screen.getByPlaceholderText(/enter your name/i)).toBeInTheDocument()
     expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/role/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument()
+    expect(screen.getByText(/role/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument()
   })
 
   it('renders branding elements', () => {
@@ -82,11 +82,9 @@ describe('SignupPage', () => {
         <SignupPage />
       </BrowserRouter>
     )
-    const roleSelect = screen.getByLabelText(/role/i)
-    expect(roleSelect).toBeInTheDocument()
     const options = screen.getAllByRole('option')
     expect(options[0]).toHaveTextContent('Student Worker')
-    expect(options[1]).toHaveTextContent('Admin')
+    expect(options[1]).toHaveTextContent('Administrator')
   })
 
   it('renders email helper text', () => {
@@ -110,4 +108,3 @@ describe('SignupPage', () => {
     expect(loginLink.closest('a')).toHaveAttribute('href', '/login')
   })
 })
-
