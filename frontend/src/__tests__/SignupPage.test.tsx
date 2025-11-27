@@ -1,5 +1,6 @@
 /**
  * Test suite for SignupPage component.
+ * Tests focus on rendering and static content.
  */
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
