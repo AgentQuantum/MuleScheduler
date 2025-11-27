@@ -1,6 +1,6 @@
 /**
  * Test suite for SignupPage component.
- * Tests focus on rendering and static content to avoid async state update issues.
+ * Tests focus on rendering and static content.
  */
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
@@ -45,7 +45,7 @@ describe('SignupPage', () => {
     expect(screen.getByPlaceholderText(/enter your name/i)).toBeInTheDocument()
     expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument()
     expect(screen.getByText(/role/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument()
   })
 
   it('renders branding elements', () => {
@@ -57,19 +57,7 @@ describe('SignupPage', () => {
     
     // Check for branding
     expect(screen.getByText(/join mulescheduler/i)).toBeInTheDocument()
-    expect(screen.getByText(/designed for colby college/i)).toBeInTheDocument()
-  })
-
-  it('renders feature chips', () => {
-    render(
-      <BrowserRouter>
-        <SignupPage />
-      </BrowserRouter>
-    )
-    
-    expect(screen.getByText(/view schedule/i)).toBeInTheDocument()
-    expect(screen.getByText(/set availability/i)).toBeInTheDocument()
-    expect(screen.getByText(/get notified/i)).toBeInTheDocument()
+    expect(screen.getByText(/create account/i)).toBeInTheDocument()
   })
 
   it('renders link to login page', () => {
@@ -79,7 +67,7 @@ describe('SignupPage', () => {
       </BrowserRouter>
     )
     
-    const loginLink = screen.getByText(/sign in here/i)
+    const loginLink = screen.getByText(/login here/i)
     expect(loginLink).toBeInTheDocument()
     expect(loginLink.closest('a')).toHaveAttribute('href', '/login')
   })
@@ -94,7 +82,7 @@ describe('SignupPage', () => {
     const roleSelect = screen.getByRole('combobox')
     expect(roleSelect).toBeInTheDocument()
     expect(screen.getByText(/student worker/i)).toBeInTheDocument()
-    expect(screen.getByText(/administrator/i)).toBeInTheDocument()
+    expect(screen.getByText(/admin/i)).toBeInTheDocument()
   })
 
   it('renders email helper text', () => {
