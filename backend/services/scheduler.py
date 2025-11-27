@@ -3,7 +3,7 @@ from models import (
     Assignment, UserAvailability, ShiftRequirement, 
     GlobalSettings, TimeSlot, User, Location
 )
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 def calculate_hours(time_slot):
     """Calculate hours for a time slot"""

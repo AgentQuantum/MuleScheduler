@@ -12,10 +12,10 @@ db.init_app(app)
 CORS(app, origins=['http://localhost:5173', 'http://localhost:3000'])
 
 # Import models (must be after db is created)
-from models import User, Location, TimeSlot, GlobalSettings, ShiftRequirement, UserAvailability, Assignment
+from models import User, Location, TimeSlot, GlobalSettings, ShiftRequirement, UserAvailability, Assignment, DaySchedule, WeeklyScheduleOverride
 
 # Import routes
-from routes import auth, users, locations, time_slots, settings, shift_requirements, availability, assignments
+from routes import auth, users, locations, time_slots, settings, shift_requirements, availability, assignments, weekly_overrides
 
 # Register blueprints
 app.register_blueprint(auth.bp)
@@ -26,6 +26,7 @@ app.register_blueprint(settings.bp)
 app.register_blueprint(shift_requirements.bp)
 app.register_blueprint(availability.bp)
 app.register_blueprint(assignments.bp)
+app.register_blueprint(weekly_overrides.bp)
 
 def init_db():
     """Initialize database tables and default data"""
