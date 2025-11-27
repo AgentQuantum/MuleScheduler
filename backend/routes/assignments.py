@@ -36,6 +36,66 @@ def get_assignments():
     assignments = query.all()
     return jsonify([a.to_dict() for a in assignments])
 
+@bp.route('', methods=['POST'])
+def create_assignment():
+    """Create a new shift assignment"""
+    user = get_current_user(request)
+    if not user or user.role != 'admin':
+        return jsonify({'error': 'Forbidden'}), 403
+    
+    data = request.get_json()
+    
+    # Validate required fields
+    required_fields = ['user_id', 'location_id', 'time_slot_id', 'week_start_date']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'{field} is required'}), 400
+    
+    week_start_date = datetime.fromisoformat(data.get('week_start_date')).date()
+    
+    # Validate max workers per shift
+    settings = GlobalSettings.query.first()
+    max_workers = settings.max_workers_per_shift if settings else 3
+    
+    current_count = Assignment.query.filter(
+        Assignment.location_id == data['location_id'],
+        Assignment.time_slot_id == data['time_slot_id'],
+        Assignment.week_start_date == week_start_date
+    ).count()
+    
+    if current_count >= max_workers:
+        return jsonify({
+            'error': 'OVER_MAX_WORKERS',
+            'message': f'Maximum {max_workers} workers already scheduled in that slot'
+        }), 400
+    
+    # Check for overlapping shifts for the user
+    overlapping = Assignment.query.filter(
+        Assignment.user_id == data['user_id'],
+        Assignment.week_start_date == week_start_date,
+        Assignment.time_slot_id == data['time_slot_id']
+    ).first()
+    
+    if overlapping:
+        return jsonify({
+            'error': 'OVERLAP_FOR_USER',
+            'message': 'This worker is already scheduled at that time'
+        }), 400
+    
+    # Create assignment
+    assignment = Assignment(
+        user_id=data['user_id'],
+        location_id=data['location_id'],
+        time_slot_id=data['time_slot_id'],
+        week_start_date=week_start_date,
+        assigned_by=user.id
+    )
+    
+    db.session.add(assignment)
+    db.session.commit()
+    
+    return jsonify(assignment.to_dict()), 201
+
 @bp.route('/run-scheduler', methods=['POST'])
 def run_scheduler():
     user = get_current_user(request)
@@ -43,6 +103,9 @@ def run_scheduler():
         return jsonify({'error': 'Forbidden'}), 403
     
     data = request.get_json()
+    if not data or not data.get('week_start_date'):
+        return jsonify({'error': 'week_start_date is required'}), 400
+    
     week_start_date = datetime.fromisoformat(data.get('week_start_date')).date()
     
     result = run_auto_scheduler(week_start_date)
@@ -207,4 +270,3 @@ def get_available_workers():
     
     available_users = User.query.filter(User.id.in_(available_user_ids)).all()
     return jsonify([u.to_dict() for u in available_users])
-
