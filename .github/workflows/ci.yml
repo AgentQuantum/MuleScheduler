@@ -26,30 +26,42 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest pytest-cov
+          pip install pytest pytest-cov flake8 coverage-badge
       
       - name: Lint with flake8
         working-directory: ./backend
         run: |
-          pip install flake8
-          # Stop the build if there are Python syntax errors or undefined names
+          # STRICT: Fail on syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # Exit-zero treats all errors as warnings
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        continue-on-error: true
+          # STRICT: Fail on style issues
+          flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
       
-      - name: Run pytest with coverage
+      - name: Run pytest with 95% branch coverage
         working-directory: ./backend
         run: |
-          python -m pytest -v tests --cov=. --cov-report=xml --cov-report=term
+          python -m pytest -v tests \
+            --cov=. \
+            --cov-branch \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-fail-under=95
       
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Generate coverage badge
+        working-directory: ./backend
+        run: |
+          coverage-badge -o coverage-backend.svg -f
+          
+      - name: Upload backend coverage badge
+        uses: actions/upload-artifact@v4
         with:
-          file: ./backend/coverage.xml
-          flags: backend
-          name: backend-coverage
-        continue-on-error: true
+          name: coverage-backend-badge
+          path: backend/coverage-backend.svg
+      
+      - name: Coverage Summary
+        run: |
+          echo "## 📊 Backend Test Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Branch Coverage: 95%+ Required**" >> $GITHUB_STEP_SUMMARY
 
   frontend:
     name: Frontend Tests
@@ -73,16 +85,13 @@ jobs:
       - name: Run ESLint
         working-directory: ./frontend
         run: npm run lint
-        continue-on-error: true
       
-      - name: Run Jest tests
+      - name: Run Jest tests with coverage
         working-directory: ./frontend
         run: npm run test:ci
       
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./frontend/coverage/coverage-final.json
-          flags: frontend
-          name: frontend-coverage
-        continue-on-error: true
+      - name: Coverage Summary
+        run: |
+          echo "## 📊 Frontend Test Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Coverage thresholds enforced via Jest config**" >> $GITHUB_STEP_SUMMARY
