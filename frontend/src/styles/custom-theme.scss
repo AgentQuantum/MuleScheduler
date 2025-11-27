@@ -1,0 +1,587 @@
+// Custom Bootstrap Theme - Green/Blue Modern Design
+// Overrides Bootstrap defaults while maintaining structure
+
+// ============================================
+// COLOR PALETTE - Green/Blue Theme
+// ============================================
+
+:root {
+  // Primary Colors - Teal/Green
+  --bs-primary: #0d9488;        // Teal-600
+  --bs-primary-dark: #0f766e;   // Teal-700
+  --bs-primary-light: #14b8a6;  // Teal-500
+  --bs-primary-lighter: #5eead4; // Teal-300
+  --bs-primary-bg: #f0fdfa;     // Teal-50
+  
+  // Secondary Colors - Navy/Blue
+  --bs-secondary: #1e40af;      // Blue-800
+  --bs-secondary-dark: #1e3a8a; // Blue-900
+  --bs-secondary-light: #2563eb; // Blue-600
+  --bs-secondary-lighter: #60a5fa; // Blue-400
+  --bs-secondary-bg: #eff6ff;   // Blue-50
+  
+  // Accent Colors
+  --bs-accent: #0891b2;         // Cyan-600
+  --bs-accent-light: #06b6d4;   // Cyan-500
+  
+  // Success (Green)
+  --bs-success: #059669;        // Emerald-600
+  --bs-success-light: #10b981;   // Emerald-500
+  --bs-success-bg: #ecfdf5;     // Emerald-50
+  
+  // Info (Cyan)
+  --bs-info: #0891b2;            // Cyan-600
+  --bs-info-light: #06b6d4;      // Cyan-500
+  --bs-info-bg: #ecfeff;         // Cyan-50
+  
+  // Warning (Amber)
+  --bs-warning: #d97706;         // Amber-600
+  --bs-warning-light: #f59e0b;   // Amber-500
+  --bs-warning-bg: #fffbeb;      // Amber-50
+  
+  // Danger (Red)
+  --bs-danger: #dc2626;          // Red-600
+  --bs-danger-light: #ef4444;    // Red-500
+  --bs-danger-bg: #fef2f2;      // Red-50
+  
+  // Neutral Grays (Custom - cooler tones)
+  --bs-gray-50: #f8fafc;
+  --bs-gray-100: #f1f5f9;
+  --bs-gray-200: #e2e8f0;
+  --bs-gray-300: #cbd5e1;
+  --bs-gray-400: #94a3b8;
+  --bs-gray-500: #64748b;
+  --bs-gray-600: #475569;
+  --bs-gray-700: #334155;
+  --bs-gray-800: #1e293b;
+  --bs-gray-900: #0f172a;
+  
+  // Text Colors
+  --bs-body-color: #1e293b;      // gray-800
+  --bs-body-bg: #ffffff;
+  --bs-text-muted: #64748b;      // gray-500
+  
+  // Border Colors
+  --bs-border-color: #e2e8f0;    // gray-200
+  --bs-border-color-translucent: rgba(226, 232, 240, 0.175);
+  
+  // Link Colors
+  --bs-link-color: #0d9488;       // primary
+  --bs-link-hover-color: #0f766e; // primary-dark
+  
+  // ============================================
+  // TYPOGRAPHY
+  // ============================================
+  --bs-font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bs-font-size-base: 1rem;
+  --bs-font-weight-normal: 400;
+  --bs-font-weight-medium: 500;
+  --bs-font-weight-semibold: 600;
+  --bs-font-weight-bold: 700;
+  
+  // ============================================
+  // SPACING
+  // ============================================
+  --bs-spacer: 1rem;
+  
+  // ============================================
+  // BORDER RADIUS (Custom - larger, softer)
+  // ============================================
+  --bs-border-radius: 0.75rem;        // 12px - main radius
+  --bs-border-radius-sm: 0.5rem;       // 8px
+  --bs-border-radius-lg: 1rem;         // 16px
+  --bs-border-radius-xl: 1.25rem;      // 20px
+  --bs-border-radius-pill: 2rem;       // Custom pill (not Bootstrap default)
+  --bs-border-radius-0: 0;
+  
+  // ============================================
+  // SHADOWS (Custom - softer, modern)
+  // ============================================
+  --bs-box-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --bs-box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06);
+  --bs-box-shadow-md: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05);
+  --bs-box-shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+  --bs-box-shadow-xl: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  --bs-box-shadow-inset: inset 0 2px 4px 0 rgba(15, 23, 42, 0.06);
+  
+  // ============================================
+  // TRANSITIONS
+  // ============================================
+  --bs-transition-base: all 0.2s ease-in-out;
+  --bs-transition-fade: opacity 0.15s linear;
+  --bs-transition-collapse: height 0.35s ease;
+}
+
+// ============================================
+// BOOTSTRAP VARIABLE OVERRIDES
+// ============================================
+
+// Import Bootstrap first (if using SCSS compilation)
+// Then override variables
+
+// Override Bootstrap's default variables
+$primary: var(--bs-primary);
+$secondary: var(--bs-secondary);
+$success: var(--bs-success);
+$info: var(--bs-info);
+$warning: var(--bs-warning);
+$danger: var(--bs-danger);
+
+$border-radius: var(--bs-border-radius);
+$border-radius-sm: var(--bs-border-radius-sm);
+$border-radius-lg: var(--bs-border-radius-lg);
+
+$box-shadow-sm: var(--bs-box-shadow-sm);
+$box-shadow: var(--bs-box-shadow);
+$box-shadow-lg: var(--bs-box-shadow-lg);
+
+// ============================================
+// CUSTOM BUTTON STYLES
+// ============================================
+
+.btn {
+  border-radius: var(--bs-border-radius) !important;
+  font-weight: var(--bs-font-weight-medium);
+  padding: 0.625rem 1.5rem;
+  transition: var(--bs-transition-base);
+  border: none;
+  box-shadow: var(--bs-box-shadow-sm);
+  position: relative;
+  overflow: hidden;
+  
+  // Remove default Bootstrap glossiness
+  background-image: none !important;
+  text-shadow: none;
+  
+  // Custom hover state
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--bs-box-shadow-md);
+  }
+  
+  // Active state
+  &:active {
+    transform: translateY(0);
+    box-shadow: var(--bs-box-shadow-sm);
+  }
+  
+  // Focus state
+  &:focus {
+    box-shadow: var(--bs-box-shadow-md), 0 0 0 0.25rem rgba(13, 148, 136, 0.25);
+  }
+  
+  // Disabled state
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  // Size variants
+  &.btn-sm {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    border-radius: var(--bs-border-radius-sm);
+  }
+  
+  &.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.125rem;
+    border-radius: var(--bs-border-radius-lg);
+  }
+}
+
+// Primary button
+.btn-primary {
+  background-color: var(--bs-primary);
+  color: white;
+  
+  &:hover {
+    background-color: var(--bs-primary-dark);
+    color: white;
+  }
+  
+  &:active {
+    background-color: var(--bs-primary-dark);
+  }
+}
+
+// Secondary button
+.btn-secondary {
+  background-color: var(--bs-secondary);
+  color: white;
+  
+  &:hover {
+    background-color: var(--bs-secondary-dark);
+    color: white;
+  }
+}
+
+// Outline buttons
+.btn-outline-primary {
+  border: 2px solid var(--bs-primary);
+  color: var(--bs-primary);
+  background-color: transparent;
+  
+  &:hover {
+    background-color: var(--bs-primary);
+    color: white;
+    border-color: var(--bs-primary);
+  }
+}
+
+.btn-outline-secondary {
+  border: 2px solid var(--bs-secondary);
+  color: var(--bs-secondary);
+  background-color: transparent;
+  
+  &:hover {
+    background-color: var(--bs-secondary);
+    color: white;
+    border-color: var(--bs-secondary);
+  }
+}
+
+// ============================================
+// CUSTOM CARD STYLES
+// ============================================
+
+.card {
+  border-radius: var(--bs-border-radius-lg);
+  border: 1px solid var(--bs-border-color);
+  box-shadow: var(--bs-box-shadow);
+  overflow: hidden;
+  transition: var(--bs-transition-base);
+  
+  &:hover {
+    box-shadow: var(--bs-box-shadow-md);
+  }
+}
+
+.card-header {
+  background-color: var(--bs-gray-50);
+  border-bottom: 1px solid var(--bs-border-color);
+  padding: 1.25rem 1.5rem;
+  font-weight: var(--bs-font-weight-semibold);
+  
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    color: var(--bs-body-color);
+  }
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+// ============================================
+// CUSTOM NAVBAR STYLES
+// ============================================
+
+.navbar {
+  box-shadow: var(--bs-box-shadow-sm);
+  border-bottom: 1px solid var(--bs-border-color);
+  padding: 0.75rem 0;
+}
+
+.navbar-brand {
+  font-weight: var(--bs-font-weight-bold);
+  font-size: 1.25rem;
+  color: var(--bs-primary) !important;
+  
+  &:hover {
+    color: var(--bs-primary-dark) !important;
+  }
+}
+
+.nav-link {
+  font-weight: var(--bs-font-weight-medium);
+  padding: 0.5rem 1rem !important;
+  border-radius: var(--bs-border-radius-sm);
+  transition: var(--bs-transition-base);
+  
+  &:hover {
+    background-color: var(--bs-primary-bg);
+    color: var(--bs-primary) !important;
+  }
+}
+
+// ============================================
+// CUSTOM FORM STYLES
+// ============================================
+
+.form-control {
+  border-radius: var(--bs-border-radius);
+  border: 1px solid var(--bs-border-color);
+  padding: 0.625rem 1rem;
+  transition: var(--bs-transition-base);
+  
+  &:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(13, 148, 136, 0.15);
+    outline: none;
+  }
+  
+  &:hover:not(:disabled):not([readonly]) {
+    border-color: var(--bs-gray-400);
+  }
+}
+
+.form-select {
+  border-radius: var(--bs-border-radius);
+  border: 1px solid var(--bs-border-color);
+  padding: 0.625rem 2.5rem 0.625rem 1rem;
+  
+  &:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(13, 148, 136, 0.15);
+  }
+}
+
+.form-label {
+  font-weight: var(--bs-font-weight-medium);
+  color: var(--bs-body-color);
+  margin-bottom: 0.5rem;
+}
+
+// ============================================
+// CUSTOM TABLE STYLES
+// ============================================
+
+.table {
+  border-radius: var(--bs-border-radius);
+  overflow: hidden;
+  
+  thead {
+    background-color: var(--bs-gray-50);
+    
+    th {
+      font-weight: var(--bs-font-weight-semibold);
+      color: var(--bs-body-color);
+      border-bottom: 2px solid var(--bs-border-color);
+      padding: 1rem;
+    }
+  }
+  
+  tbody {
+    tr {
+      transition: var(--bs-transition-base);
+      
+      &:hover {
+        background-color: var(--bs-gray-50);
+      }
+    }
+    
+    td {
+      padding: 1rem;
+      border-color: var(--bs-border-color);
+    }
+  }
+}
+
+.table-striped {
+  tbody tr:nth-of-type(odd) {
+    background-color: var(--bs-gray-50);
+  }
+}
+
+// ============================================
+// CUSTOM MODAL STYLES
+// ============================================
+
+.modal-content {
+  border-radius: var(--bs-border-radius-lg);
+  border: none;
+  box-shadow: var(--bs-box-shadow-xl);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--bs-border-color);
+  padding: 1.5rem;
+  
+  .modal-title {
+    font-weight: var(--bs-font-weight-semibold);
+    color: var(--bs-body-color);
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--bs-border-color);
+  padding: 1.5rem;
+}
+
+// ============================================
+// CUSTOM ALERT STYLES
+// ============================================
+
+.alert {
+  border-radius: var(--bs-border-radius);
+  border: none;
+  padding: 1rem 1.25rem;
+  box-shadow: var(--bs-box-shadow-sm);
+  
+  &.alert-primary {
+    background-color: var(--bs-primary-bg);
+    color: var(--bs-primary-dark);
+    border-left: 4px solid var(--bs-primary);
+  }
+  
+  &.alert-success {
+    background-color: var(--bs-success-bg);
+    color: var(--bs-success);
+    border-left: 4px solid var(--bs-success);
+  }
+  
+  &.alert-danger {
+    background-color: var(--bs-danger-bg);
+    color: var(--bs-danger);
+    border-left: 4px solid var(--bs-danger);
+  }
+  
+  &.alert-warning {
+    background-color: var(--bs-warning-bg);
+    color: var(--bs-warning);
+    border-left: 4px solid var(--bs-warning);
+  }
+  
+  &.alert-info {
+    background-color: var(--bs-info-bg);
+    color: var(--bs-info);
+    border-left: 4px solid var(--bs-info);
+  }
+}
+
+// ============================================
+// CUSTOM DROPDOWN STYLES
+// ============================================
+
+.dropdown-menu {
+  border-radius: var(--bs-border-radius);
+  border: 1px solid var(--bs-border-color);
+  box-shadow: var(--bs-box-shadow-md);
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dropdown-item {
+  border-radius: var(--bs-border-radius-sm);
+  padding: 0.625rem 1rem;
+  transition: var(--bs-transition-base);
+  
+  &:hover {
+    background-color: var(--bs-primary-bg);
+    color: var(--bs-primary);
+  }
+  
+  &:active {
+    background-color: var(--bs-primary);
+    color: white;
+  }
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+
+// Custom shadow utilities
+.shadow-custom {
+  box-shadow: var(--bs-box-shadow) !important;
+}
+
+.shadow-custom-sm {
+  box-shadow: var(--bs-box-shadow-sm) !important;
+}
+
+.shadow-custom-lg {
+  box-shadow: var(--bs-box-shadow-lg) !important;
+}
+
+// Custom border radius utilities
+.rounded-custom {
+  border-radius: var(--bs-border-radius) !important;
+}
+
+.rounded-custom-sm {
+  border-radius: var(--bs-border-radius-sm) !important;
+}
+
+.rounded-custom-lg {
+  border-radius: var(--bs-border-radius-lg) !important;
+}
+
+// ============================================
+// FULLCALENDAR THEME OVERRIDES
+// ============================================
+
+.fc {
+  // Override FullCalendar to match our theme
+  .fc-button {
+    border-radius: var(--bs-border-radius) !important;
+    background-color: var(--bs-primary) !important;
+    border: none !important;
+    box-shadow: var(--bs-box-shadow-sm) !important;
+    font-weight: var(--bs-font-weight-medium) !important;
+    padding: 0.625rem 1.5rem !important;
+    
+    &:hover {
+      background-color: var(--bs-primary-dark) !important;
+      transform: translateY(-1px);
+      box-shadow: var(--bs-box-shadow-md) !important;
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  
+  .fc-event {
+    border-radius: var(--bs-border-radius-sm) !important;
+    border: none !important;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .fc-daygrid-day {
+    border-color: var(--bs-border-color) !important;
+  }
+  
+  .fc-col-header-cell {
+    background-color: var(--bs-gray-50) !important;
+    border-color: var(--bs-border-color) !important;
+  }
+}
+
+// ============================================
+// GLOBAL OVERRIDES
+// ============================================
+
+// Remove default Bootstrap button group border radius
+.btn-group {
+  .btn {
+    &:first-child {
+      border-top-left-radius: var(--bs-border-radius) !important;
+      border-bottom-left-radius: var(--bs-border-radius) !important;
+    }
+    
+    &:last-child {
+      border-top-right-radius: var(--bs-border-radius) !important;
+      border-bottom-right-radius: var(--bs-border-radius) !important;
+    }
+  }
+}
+
+// Smooth scrolling
+html {
+  scroll-behavior: smooth;
+}
+
+// Custom focus styles
+*:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+  border-radius: var(--bs-border-radius-sm);
+}
+

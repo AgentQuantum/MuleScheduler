@@ -1,0 +1,605 @@
+/* MuleScheduler Custom Theme - Green-based with Colby Blue accents */
+/* Clean, flat, modern design inspired by schedule blocks */
+
+:root {
+  /* Primary Green Palette (from schedule blocks) */
+  --color-primary: #a7f3d0;           /* Light green fill */
+  --color-primary-dark: #10b981;       /* Darker green for hover/active */
+  --color-primary-border: #059669;     /* Darker green border */
+  --color-primary-darker: #047857;     /* Even darker for text/accents */
+  --color-primary-bg: #ecfdf5;         /* Very light green background */
+  
+  /* Colby Blue (limited use - Colby-specific elements only) */
+  --color-colby-blue: #002169;
+  --color-colby-blue-light: #003399;
+  --color-colby-blue-bg: #f0f4ff;
+  
+  /* Neutral Grays */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  /* Text & Background */
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-bg: #ffffff;
+  --color-bg-light: #f9fafb;
+  
+  /* Border Colors */
+  --color-border: #e5e7eb;
+  --color-border-primary: var(--color-primary-border);
+  
+  /* Bootstrap Variable Overrides */
+  --bs-primary: var(--color-primary-dark);
+  --bs-primary-rgb: 16, 185, 129;
+  --bs-secondary: var(--color-colby-blue);
+  --bs-secondary-rgb: 0, 33, 105;
+  --bs-success: var(--color-primary-dark);
+  --bs-info: var(--color-colby-blue);
+  
+  /* Border Radius (larger, consistent) */
+  --bs-border-radius: 0.5rem;          /* 8px - main radius */
+  --bs-border-radius-sm: 0.375rem;      /* 6px */
+  --bs-border-radius-lg: 0.75rem;       /* 12px */
+  --bs-border-radius-xl: 1rem;          /* 16px */
+  --bs-border-radius-pill: 2rem;
+  
+  /* Shadows (subtle, flat design) */
+  --bs-box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --bs-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --bs-box-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --bs-box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Transitions */
+  --bs-transition: all 0.2s ease-in-out;
+}
+
+/* ============================================
+   BUTTONS - Green theme with darker border
+   ============================================ */
+
+.btn {
+  border-radius: var(--bs-border-radius) !important;
+  font-weight: 500;
+  padding: 0.625rem 1.5rem;
+  transition: var(--bs-transition);
+  border: 2px solid;
+  background-image: none !important;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-darker);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-darker);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: var(--bs-box-shadow-sm);
+}
+
+.btn-primary:active,
+.btn-primary:focus {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-darker);
+  color: white;
+  box-shadow: 0 0 0 0.25rem rgba(5, 150, 105, 0.25);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background-color: var(--color-colby-blue);
+  border-color: var(--color-colby-blue);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-colby-blue-light);
+  border-color: var(--color-colby-blue-light);
+  color: white;
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-darker);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-darker);
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: var(--bs-border-radius-sm);
+}
+
+.btn-lg {
+  padding: 0.75rem 2rem;
+  font-size: 1.125rem;
+  border-radius: var(--bs-border-radius-lg);
+}
+
+/* ============================================
+   SCHEDULE BLOCKS - Green rectangles
+   ============================================ */
+
+.schedule-block {
+  background-color: var(--color-primary);
+  border: 2px solid var(--color-primary-border);
+  border-radius: var(--bs-border-radius);
+  padding: 1rem;
+  color: var(--color-primary-darker);
+  font-weight: 500;
+  transition: var(--bs-transition);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.schedule-block:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-darker);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--bs-box-shadow-md);
+}
+
+.schedule-block.active {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-darker);
+  color: white;
+  box-shadow: var(--bs-box-shadow);
+}
+
+.schedule-block-time {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.schedule-block-location {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.schedule-block-assigned {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.card {
+  border-radius: var(--bs-border-radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--bs-box-shadow-sm);
+  overflow: hidden;
+  background-color: var(--color-bg);
+}
+
+.card-header {
+  background-color: var(--color-bg-light);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.25rem 1.5rem;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+
+.navbar {
+  background-color: var(--color-bg) !important;
+  border-bottom: 2px solid var(--color-primary-border);
+  box-shadow: var(--bs-box-shadow-sm);
+  padding: 0.75rem 0;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-primary-darker) !important;
+}
+
+.navbar-brand:hover {
+  color: var(--color-primary-dark) !important;
+}
+
+.nav-link {
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  border-radius: var(--bs-border-radius-sm);
+  transition: var(--bs-transition);
+  color: var(--color-text) !important;
+}
+
+.nav-link:hover {
+  background-color: var(--color-primary-bg);
+  color: var(--color-primary-darker) !important;
+}
+
+/* Colby-specific elements use Colby Blue */
+.colby-branding {
+  color: var(--color-colby-blue);
+}
+
+.colby-branding:hover {
+  color: var(--color-colby-blue-light);
+}
+
+/* ============================================
+   FORMS
+   ============================================ */
+
+.form-control {
+  border-radius: var(--bs-border-radius);
+  border: 1px solid var(--color-border);
+  padding: 0.625rem 1rem;
+  transition: var(--bs-transition);
+  background-color: var(--color-bg);
+}
+
+.form-control:focus {
+  border-color: var(--color-primary-border);
+  box-shadow: 0 0 0 0.25rem rgba(5, 150, 105, 0.15);
+  outline: none;
+}
+
+.form-control:hover:not(:disabled):not([readonly]) {
+  border-color: var(--color-gray-400);
+}
+
+.form-select {
+  border-radius: var(--bs-border-radius);
+  border: 1px solid var(--color-border);
+  padding: 0.625rem 2.5rem 0.625rem 1rem;
+}
+
+.form-select:focus {
+  border-color: var(--color-primary-border);
+  box-shadow: 0 0 0 0.25rem rgba(5, 150, 105, 0.15);
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+.table {
+  border-radius: var(--bs-border-radius);
+  overflow: hidden;
+}
+
+.table thead {
+  background-color: var(--color-primary-bg);
+}
+
+.table thead th {
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 2px solid var(--color-primary-border);
+  padding: 1rem;
+}
+
+.table tbody tr {
+  transition: var(--bs-transition);
+}
+
+.table tbody tr:hover {
+  background-color: var(--color-primary-bg);
+}
+
+.table tbody td {
+  padding: 1rem;
+  border-color: var(--color-border);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: var(--color-bg-light);
+}
+
+/* ============================================
+   MODALS
+   ============================================ */
+
+.modal-content {
+  border-radius: var(--bs-border-radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--bs-box-shadow-lg);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.5rem;
+  background-color: var(--color-bg-light);
+}
+
+.modal-header .modal-title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--color-border);
+  padding: 1.5rem;
+  background-color: var(--color-bg-light);
+}
+
+/* ============================================
+   ALERTS
+   ============================================ */
+
+.alert {
+  border-radius: var(--bs-border-radius);
+  border: 2px solid;
+  padding: 1rem 1.25rem;
+  box-shadow: none;
+}
+
+.alert-primary {
+  background-color: var(--color-primary-bg);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-darker);
+}
+
+.alert-success {
+  background-color: var(--color-primary-bg);
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-darker);
+}
+
+.alert-danger {
+  background-color: #fef2f2;
+  border-color: #dc2626;
+  color: #991b1b;
+}
+
+.alert-warning {
+  background-color: #fffbeb;
+  border-color: #d97706;
+  color: #92400e;
+}
+
+.alert-info {
+  background-color: var(--color-colby-blue-bg);
+  border-color: var(--color-colby-blue);
+  color: var(--color-colby-blue);
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+
+.badge {
+  border-radius: var(--bs-border-radius-sm);
+  padding: 0.375rem 0.75rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.badge.bg-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary-border);
+  color: var(--color-primary-darker);
+}
+
+.badge.bg-secondary {
+  background-color: var(--color-colby-blue) !important;
+  border-color: var(--color-colby-blue);
+  color: white;
+}
+
+/* ============================================
+   DROPDOWNS
+   ============================================ */
+
+.dropdown-menu {
+  border-radius: var(--bs-border-radius);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--bs-box-shadow-md);
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dropdown-item {
+  border-radius: var(--bs-border-radius-sm);
+  padding: 0.625rem 1rem;
+  transition: var(--bs-transition);
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-primary-bg);
+  color: var(--color-primary-darker);
+}
+
+.dropdown-item:active {
+  background-color: var(--color-primary);
+  color: var(--color-primary-darker);
+}
+
+/* ============================================
+   FULLCALENDAR THEME OVERRIDES
+   ============================================ */
+
+.fc {
+  --fc-border-color: var(--color-border);
+  --fc-page-bg-color: var(--color-bg);
+  --fc-neutral-bg-color: var(--color-bg-light);
+}
+
+.fc .fc-button {
+  border-radius: var(--bs-border-radius) !important;
+  background-color: var(--color-primary) !important;
+  border: 2px solid var(--color-primary-border) !important;
+  color: var(--color-primary-darker) !important;
+  font-weight: 500 !important;
+  padding: 0.625rem 1.5rem !important;
+  box-shadow: none !important;
+}
+
+.fc .fc-button:hover {
+  background-color: var(--color-primary-dark) !important;
+  border-color: var(--color-primary-darker) !important;
+  color: white !important;
+}
+
+.fc .fc-button:active {
+  background-color: var(--color-primary-dark) !important;
+}
+
+.fc .fc-button-primary:disabled {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary-border) !important;
+  color: var(--color-primary-darker) !important;
+  opacity: 0.6;
+}
+
+.fc .fc-event {
+  border-radius: var(--bs-border-radius-sm) !important;
+  border: none !important;
+  background-color: var(--color-primary) !important;
+  border-left: 3px solid var(--color-primary-border) !important;
+  color: var(--color-primary-darker) !important;
+  padding: 0.25rem 0.5rem;
+  font-weight: 500;
+}
+
+.fc .fc-event:hover {
+  background-color: var(--color-primary-dark) !important;
+  color: white !important;
+}
+
+.fc .fc-daygrid-day {
+  border-color: var(--color-border) !important;
+}
+
+.fc .fc-col-header-cell {
+  background-color: var(--color-primary-bg) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+  font-weight: 600;
+}
+
+.fc .fc-day-today {
+  background-color: var(--color-primary-bg) !important;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.bg-primary-light {
+  background-color: var(--color-primary-bg) !important;
+}
+
+.border-primary {
+  border-color: var(--color-primary-border) !important;
+}
+
+.text-primary-dark {
+  color: var(--color-primary-darker) !important;
+}
+
+/* Colby Blue utilities (use sparingly) */
+.text-colby {
+  color: var(--color-colby-blue) !important;
+}
+
+.bg-colby {
+  background-color: var(--color-colby-blue) !important;
+}
+
+.border-colby {
+  border-color: var(--color-colby-blue) !important;
+}
+
+/* ============================================
+   GLOBAL OVERRIDES
+   ============================================ */
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary-border);
+  outline-offset: 2px;
+  border-radius: var(--bs-border-radius-sm);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* Remove default Bootstrap button group styling */
+.btn-group .btn {
+  border-radius: var(--bs-border-radius) !important;
+}
+
+.btn-group .btn:not(:first-child) {
+  margin-left: -2px;
+}
+
+/* Login/Signup Page Styles */
+.login-left-section {
+  background-color: var(--color-colby-blue);
+  background-image: url('/colby-campus.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.login-left-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 33, 105, 0.75);
+}
+
+.login-left-content {
+  position: relative;
+  z-index: 1;
+}
