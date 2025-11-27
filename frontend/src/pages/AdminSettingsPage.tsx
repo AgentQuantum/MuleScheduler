@@ -389,7 +389,8 @@ function AdminSettingsPage() {
     return Math.floor((endMinutes - startMinutes) / durationMinutes)
   }
 
-  const handleDeleteTimeSlot = async (id: number) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _handleDeleteTimeSlot = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this time slot? This will affect all related shifts and requirements.')) {
       try {
         await api.delete(`/time-slots/${id}`)
@@ -401,7 +402,8 @@ function AdminSettingsPage() {
     }
   }
 
-  const handleEditTimeSlot = (slot: TimeSlot) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _handleEditTimeSlot = (slot: TimeSlot) => {
     setEditingTimeSlot(slot)
     setTimeSlotForm({
       day_of_week: slot.day_of_week,
@@ -416,7 +418,8 @@ function AdminSettingsPage() {
     return days[dayOfWeek]
   }
 
-  const formatTime = (timeStr: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _formatTime = (timeStr: string) => {
     const [hours, minutes] = timeStr.split(':')
     const hour = parseInt(hours)
     const ampm = hour >= 12 ? 'PM' : 'AM'
