@@ -7,15 +7,27 @@ import { BrowserRouter } from 'react-router-dom'
 import SignupPage from '../pages/SignupPage'
 
 // Mock AuthContext
+const mockLogin = jest.fn()
+const mockNavigate = jest.fn()
+
 jest.mock('../contexts/AuthContext', () => ({
   useAuth: () => ({
     user: null,
     token: null,
-    login: jest.fn().mockResolvedValue({}),
+    login: mockLogin,
     logout: jest.fn(),
     loading: false
   })
 }))
+
+// Mock react-router-dom
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom')
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate
+  }
+})
 
 // Mock the API
 jest.mock('../services/api', () => ({
@@ -34,6 +46,11 @@ jest.mock('../services/api', () => ({
 }))
 
 describe('SignupPage', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockLogin.mockResolvedValue({})
+  })
+
   it('renders signup form with all fields', () => {
     render(
       <BrowserRouter>
@@ -45,7 +62,7 @@ describe('SignupPage', () => {
     expect(screen.getByPlaceholderText(/enter your name/i)).toBeInTheDocument()
     expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument()
     expect(screen.getByText(/role/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument()
   })
 
   it('renders branding elements', () => {
@@ -57,7 +74,27 @@ describe('SignupPage', () => {
     
     // Check for branding
     expect(screen.getByText(/join mulescheduler/i)).toBeInTheDocument()
-    expect(screen.getByText(/create account/i)).toBeInTheDocument()
+    expect(screen.getByText(/designed for colby college/i)).toBeInTheDocument()
+  })
+
+  it('renders role selector with options', () => {
+    render(
+      <BrowserRouter>
+        <SignupPage />
+      </BrowserRouter>
+    )
+    const options = screen.getAllByRole('option')
+    expect(options[0]).toHaveTextContent('Student Worker')
+    expect(options[1]).toHaveTextContent('Administrator')
+  })
+
+  it('renders email helper text', () => {
+    render(
+      <BrowserRouter>
+        <SignupPage />
+      </BrowserRouter>
+    )
+    expect(screen.getByText(/use your @colby.edu email address/i)).toBeInTheDocument()
   })
 
   it('renders link to login page', () => {
@@ -67,32 +104,8 @@ describe('SignupPage', () => {
       </BrowserRouter>
     )
     
-    const loginLink = screen.getByText(/login here/i)
+    const loginLink = screen.getByText(/sign in here/i)
     expect(loginLink).toBeInTheDocument()
     expect(loginLink.closest('a')).toHaveAttribute('href', '/login')
-  })
-
-  it('renders role selector with options', () => {
-    render(
-      <BrowserRouter>
-        <SignupPage />
-      </BrowserRouter>
-    )
-    
-    const roleSelect = screen.getByRole('combobox')
-    expect(roleSelect).toBeInTheDocument()
-    // Check for options within the select element
-    const options = screen.getAllByRole('option')
-    expect(options.length).toBeGreaterThanOrEqual(2)
-  })
-
-  it('renders email helper text', () => {
-    render(
-      <BrowserRouter>
-        <SignupPage />
-      </BrowserRouter>
-    )
-    
-    expect(screen.getByText(/@colby.edu email/i)).toBeInTheDocument()
   })
 })

@@ -1,0 +1,115 @@
+/* FullCalendar Weekly Schedule Visual Enhancements */
+/* These styles make time slots taller and event blocks more modern */
+
+/* ============================================
+   TALLER TIME SLOTS (ROWS)
+   ============================================ */
+
+/* Increase the height of each time slot row */
+.fc .fc-timegrid-slot {
+  height: 3rem; /* ~48px - makes rows taller but not huge */
+  min-height: 3rem;
+}
+
+/* Ensure the time grid cells match the slot height */
+.fc .fc-timegrid-slot-lane {
+  height: 3rem;
+  min-height: 3rem;
+}
+
+/* Adjust the time axis labels to align with taller slots */
+.fc .fc-timegrid-axis {
+  padding-top: 0.5rem;
+}
+
+/* ============================================
+   ROUNDED CORNERS & SHADOWS FOR EVENT BLOCKS
+   ============================================ */
+
+/* Main event container in time grid */
+.fc .fc-timegrid-event {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  border: none !important; /* Remove default border, shadow provides definition */
+}
+
+/* Event content wrapper */
+.fc .fc-timegrid-event .fc-event-main {
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Event title text */
+.fc .fc-timegrid-event .fc-event-title {
+  padding: 0.15rem 0;
+  font-weight: 500;
+}
+
+/* Event time display */
+.fc .fc-timegrid-event .fc-event-time {
+  padding: 0.1rem 0;
+  font-size: 0.85em;
+}
+
+/* Ensure event frames also have rounded corners */
+.fc .fc-timegrid-event-harness {
+  border-radius: 8px;
+  overflow: visible; /* Allow shadow to show */
+}
+
+/* Event blocks when dragging */
+.fc .fc-timegrid-event.fc-event-dragging {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0.9;
+}
+
+/* Event blocks on hover */
+.fc .fc-timegrid-event:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* ============================================
+   ADDITIONAL POLISH
+   ============================================ */
+
+/* Ensure event content doesn't overflow rounded corners */
+.fc .fc-timegrid-event .fc-event-main-frame {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Make sure event segments (for multi-day events) also have rounded corners */
+.fc .fc-timegrid-event-segment {
+  border-radius: 8px;
+}
+
+/* Improve spacing in time grid */
+.fc .fc-timegrid-col-frame {
+  padding: 0.1rem 0;
+}
+
+/* Ensure day columns have proper spacing */
+.fc .fc-timegrid-col {
+  border-left: 1px solid var(--color-border);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .fc .fc-timegrid-slot {
+    height: 2.5rem; /* Slightly smaller on mobile */
+    min-height: 2.5rem;
+  }
+  
+  .fc .fc-timegrid-event {
+    border-radius: 6px; /* Slightly smaller radius on mobile */
+  }
+  
+  .fc .fc-timegrid-event .fc-event-main {
+    padding: 0.2rem 0.4rem;
+  }
+}
+
