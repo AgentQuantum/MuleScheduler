@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Button, Row, Col } from 'react-bootstrap'
 import api from '../services/api'
 import { Location, TimeSlot, UserAvailability } from '../types/scheduler'
+import { useAuth } from '../contexts/AuthContext'
 import StatusChip from '../components/StatusChip'
 import IconButton from '../components/IconButton'
 import { AvailabilityIllustration } from '../components/Illustrations'
@@ -42,6 +43,7 @@ const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6]
 
 function StudentAvailabilityPage() {
+  const { user } = useAuth()
   const { showToast } = useToast()
   const [weekStart, setWeekStart] = useState(() => {
     const today = new Date()
@@ -155,6 +157,7 @@ function StudentAvailabilityPage() {
     if (!current) {
       // Not available → Available
       newAvailabilities.set(key, {
+        user_id: user?.id || 0,
         location_id: selectedLocationId,
         time_slot_id: slot.id,
         preference_level: 1,

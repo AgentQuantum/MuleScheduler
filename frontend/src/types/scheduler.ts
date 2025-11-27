@@ -57,12 +57,18 @@ export interface UserAvailability {
   preference_level: number // 1 = neutral, 2 = preferred
 }
 
+export interface GlobalSettings {
+  max_workers_per_shift: number
+  max_hours_per_user_per_week?: number
+}
+
 export interface ScheduleData {
   users: User[]
   assignments: Assignment[]
   locations: Location[]
   timeSlots: TimeSlot[]
   weekStart: string
+  settings?: GlobalSettings
 }
 
 export interface DragItem {
