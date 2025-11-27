@@ -69,6 +69,61 @@ class GlobalSettings(db.Model):
             'max_hours_per_user_per_week': self.max_hours_per_user_per_week
         }
 
+class DaySchedule(db.Model):
+    """Defines the standard working hours for each day - time slots are auto-generated from this (Standard Week Template)"""
+    __tablename__ = 'day_schedules'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    day_of_week = db.Column(db.Integer, nullable=False, unique=True)  # 0=Monday, 6=Sunday
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+    slot_duration_minutes = db.Column(db.Integer, default=30, nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'day_of_week': self.day_of_week,
+            'start_time': self.start_time.strftime('%H:%M') if self.start_time else None,
+            'end_time': self.end_time.strftime('%H:%M') if self.end_time else None,
+            'slot_duration_minutes': self.slot_duration_minutes,
+            'is_active': self.is_active
+        }
+    
+    def get_day_name(self):
+        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        return days[self.day_of_week]
+
+class WeeklyScheduleOverride(db.Model):
+    """Week-specific overrides for day schedules (exceptions to the standard week)"""
+    __tablename__ = 'weekly_schedule_overrides'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    week_start_date = db.Column(db.Date, nullable=False)
+    day_of_week = db.Column(db.Integer, nullable=False)  # 0=Monday, 6=Sunday
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+    slot_duration_minutes = db.Column(db.Integer, default=30, nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    
+    # Unique constraint: one override per week/day combination
+    __table_args__ = (db.UniqueConstraint('week_start_date', 'day_of_week', name='unique_weekly_override'),)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'week_start_date': self.week_start_date.isoformat(),
+            'day_of_week': self.day_of_week,
+            'start_time': self.start_time.strftime('%H:%M') if self.start_time else None,
+            'end_time': self.end_time.strftime('%H:%M') if self.end_time else None,
+            'slot_duration_minutes': self.slot_duration_minutes,
+            'is_active': self.is_active
+        }
+    
+    def get_day_name(self):
+        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        return days[self.day_of_week]
+
 class ShiftRequirement(db.Model):
     __tablename__ = 'shift_requirements'
     
