@@ -1,4 +1,4 @@
-# 🐴 MuleScheduler
+# MuleScheduler
 
 > **A modern, intelligent scheduling system for Colby College student workers**
 
