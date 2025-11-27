@@ -355,3 +355,441 @@ class TestCleanupOrphanedRecords:
             assert UserAvailability.query.count() == 1
             assert Assignment.query.count() == 0
             assert UserAvailability.query.first().time_slot_id == valid_slot.id
+
+
+class TestRunAutoScheduler:
+    """Test run_auto_scheduler function."""
+    
+    def test_run_auto_scheduler_no_time_slots(self, test_app):
+        """Test scheduler when no time slots exist."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            result = run_auto_scheduler(week_start)
+            
+            assert result['message'] == 'No time slots configured'
+            assert result['scheduled'] == 0
+            assert result['assignments'] == []
+    
+    def test_run_auto_scheduler_no_locations(self, test_app, test_time_slot):
+        """Test scheduler when no active locations exist."""
+        with test_app.app_context():
+            # Deactivate all locations
+            Location.query.update({'is_active': False})
+            db.session.commit()
+            
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            result = run_auto_scheduler(week_start)
+            
+            assert result['message'] == 'No active locations configured'
+            assert result['scheduled'] == 0
+            assert result['assignments'] == []
+    
+    def test_run_auto_scheduler_basic_scheduling(self, test_app, test_location, test_time_slot):
+        """Test basic scheduling with one available user."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Create user and availability
+            user = User(name='Test Worker', email='worker@colby.edu', role='user')
+            db.session.add(user)
+            db.session.commit()
+            
+            availability = UserAvailability(
+                user_id=user.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                preference_level=1
+            )
+            db.session.add(availability)
+            db.session.commit()
+            
+            result = run_auto_scheduler(week_start)
+            
+            assert result['scheduled'] == 1
+            assert len(result['assignments']) == 1
+            assert result['assignments'][0]['user_id'] == user.id
+            assert result['assignments'][0]['location_id'] == test_location['id']
+            assert result['assignments'][0]['time_slot_id'] == test_time_slot['id']
+    
+    def test_run_auto_scheduler_respects_capacity(self, test_app, test_location, test_time_slot):
+        """Test that scheduler respects max_workers_per_shift capacity."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Update global settings to max 2 workers
+            settings = GlobalSettings.query.first()
+            settings.max_workers_per_shift = 2
+            db.session.commit()
+            
+            # Create 5 available users
+            users = []
+            availabilities = []
+            for i in range(5):
+                user = User(name=f'Worker {i}', email=f'worker{i}@colby.edu', role='user')
+                users.append(user)
+                db.session.add(user)
+            db.session.commit()
+            
+            for user in users:
+                availability = UserAvailability(
+                    user_id=user.id,
+                    location_id=test_location['id'],
+                    time_slot_id=test_time_slot['id'],
+                    week_start_date=week_start,
+                    preference_level=1
+                )
+                availabilities.append(availability)
+                db.session.add(availability)
+            db.session.commit()
+            
+            result = run_auto_scheduler(week_start)
+            
+            # Should only assign 2 workers (max capacity)
+            assert result['scheduled'] == 2
+            assert len(result['assignments']) == 2
+    
+    def test_run_auto_scheduler_respects_max_hours(self, test_app, test_location):
+        """Test that scheduler respects max_hours_per_user_per_week."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Set max hours to 10
+            settings = GlobalSettings.query.first()
+            settings.max_hours_per_user_per_week = 10
+            db.session.commit()
+            
+            # Create two time slots (8 hours each)
+            slot1 = TimeSlot(day_of_week=0, start_time=time(9, 0), end_time=time(17, 0))
+            slot2 = TimeSlot(day_of_week=1, start_time=time(9, 0), end_time=time(17, 0))
+            db.session.add_all([slot1, slot2])
+            db.session.commit()
+            
+            # Create user with availability for both slots
+            user = User(name='Test Worker', email='worker@colby.edu', role='user')
+            db.session.add(user)
+            db.session.commit()
+            
+            availability1 = UserAvailability(
+                user_id=user.id,
+                location_id=test_location['id'],
+                time_slot_id=slot1.id,
+                week_start_date=week_start,
+                preference_level=1
+            )
+            availability2 = UserAvailability(
+                user_id=user.id,
+                location_id=test_location['id'],
+                time_slot_id=slot2.id,
+                week_start_date=week_start,
+                preference_level=1
+            )
+            db.session.add_all([availability1, availability2])
+            db.session.commit()
+            
+            result = run_auto_scheduler(week_start)
+            
+            # Should only assign 1 shift (8 hours), not 2 (16 hours > 10 max)
+            assert result['scheduled'] == 1
+            assert result['assignments'][0]['time_slot_id'] in [slot1.id, slot2.id]
+    
+    def test_run_auto_scheduler_prefers_lower_hours(self, test_app, test_location, test_time_slot):
+        """Test that scheduler prioritizes workers with fewer hours."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Set capacity to 1 so only one gets assigned
+            settings = GlobalSettings.query.first()
+            settings.max_workers_per_shift = 1
+            db.session.commit()
+            
+            # Create two users
+            user1 = User(name='Worker 1', email='worker1@colby.edu', role='user')
+            user2 = User(name='Worker 2', email='worker2@colby.edu', role='user')
+            db.session.add_all([user1, user2])
+            db.session.commit()
+            
+            # User1 already has 8 hours assigned
+            existing_assignment = Assignment(
+                user_id=user1.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(existing_assignment)
+            
+            # Both users are available for a new slot
+            slot2 = TimeSlot(day_of_week=1, start_time=time(9, 0), end_time=time(17, 0))
+            db.session.add(slot2)
+            db.session.commit()
+            
+            availability1 = UserAvailability(
+                user_id=user1.id,
+                location_id=test_location['id'],
+                time_slot_id=slot2.id,
+                week_start_date=week_start,
+                preference_level=1
+            )
+            availability2 = UserAvailability(
+                user_id=user2.id,
+                location_id=test_location['id'],
+                time_slot_id=slot2.id,
+                week_start_date=week_start,
+                preference_level=1
+            )
+            db.session.add_all([availability1, availability2])
+            db.session.commit()
+            
+            result = run_auto_scheduler(week_start)
+            
+            # Should assign to user2 (0 hours) instead of user1 (8 hours)
+            assert result['scheduled'] == 1
+            assert result['assignments'][0]['user_id'] == user2.id
+    
+    def test_run_auto_scheduler_prefers_preferred_slots(self, test_app, test_location, test_time_slot):
+        """Test that scheduler prioritizes users with preferred slots over neutral when capacity is limited."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Set capacity to 1 so only one user gets assigned
+            settings = GlobalSettings.query.first()
+            settings.max_workers_per_shift = 1
+            db.session.commit()
+            
+            # Create two users, both available for the same slot
+            user1 = User(name='Worker 1', email='worker1@colby.edu', role='user')
+            user2 = User(name='Worker 2', email='worker2@colby.edu', role='user')
+            db.session.add_all([user1, user2])
+            db.session.commit()
+            
+            # User1 has neutral preference, user2 has preferred
+            availability1 = UserAvailability(
+                user_id=user1.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                preference_level=1  # Neutral
+            )
+            availability2 = UserAvailability(
+                user_id=user2.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                preference_level=2  # Preferred
+            )
+            db.session.add_all([availability1, availability2])
+            db.session.commit()
+            
+            result = run_auto_scheduler(week_start)
+            
+            # Should assign to user2 (preferred) over user1 (neutral)
+            assert result['scheduled'] == 1
+            assert result['assignments'][0]['user_id'] == user2.id
+    
+    def test_run_auto_scheduler_uses_shift_requirement_override(self, test_app, test_location, test_time_slot):
+        """Test that scheduler uses ShiftRequirement overrides."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Set global max to 2
+            settings = GlobalSettings.query.first()
+            settings.max_workers_per_shift = 2
+            db.session.commit()
+            
+            # Create override requiring 5 workers for this slot
+            requirement = ShiftRequirement(
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                required_workers=5
+            )
+            db.session.add(requirement)
+            
+            # Create 5 available users
+            users = []
+            for i in range(5):
+                user = User(name=f'Worker {i}', email=f'worker{i}@colby.edu', role='user')
+                users.append(user)
+                db.session.add(user)
+            db.session.commit()
+            
+            for user in users:
+                availability = UserAvailability(
+                    user_id=user.id,
+                    location_id=test_location['id'],
+                    time_slot_id=test_time_slot['id'],
+                    week_start_date=week_start,
+                    preference_level=1
+                )
+                db.session.add(availability)
+            db.session.commit()
+            
+            result = run_auto_scheduler(week_start)
+            
+            # Should assign 5 workers (override), not 2 (global max)
+            assert result['scheduled'] == 5
+    
+    def test_run_auto_scheduler_skips_already_assigned(self, test_app, test_location, test_time_slot):
+        """Test that scheduler skips users already assigned to the slot."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Create user and assign them
+            user = User(name='Test Worker', email='worker@colby.edu', role='user')
+            db.session.add(user)
+            db.session.commit()
+            
+            assignment = Assignment(
+                user_id=user.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(assignment)
+            
+            # User also has availability for same slot
+            availability = UserAvailability(
+                user_id=user.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                preference_level=1
+            )
+            db.session.add(availability)
+            db.session.commit()
+            
+            result = run_auto_scheduler(week_start)
+            
+            # Should not assign again (already assigned)
+            assert result['scheduled'] == 0
+    
+    def test_run_auto_scheduler_respects_blocked_slots(self, test_app, test_location, test_time_slot):
+        """Test that scheduler skips slots with required_workers = 0."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Create requirement blocking this slot (0 workers)
+            requirement = ShiftRequirement(
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                required_workers=0  # Blocked
+            )
+            db.session.add(requirement)
+            
+            # Create available user
+            user = User(name='Test Worker', email='worker@colby.edu', role='user')
+            db.session.add(user)
+            db.session.commit()
+            
+            availability = UserAvailability(
+                user_id=user.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                preference_level=1
+            )
+            db.session.add(availability)
+            db.session.commit()
+            
+            result = run_auto_scheduler(week_start)
+            
+            # Should skip blocked slot
+            assert result['scheduled'] == 0
+            assert result['skipped_slots'] == 1
+    
+    def test_run_auto_scheduler_creates_default_settings(self, test_app, test_location, test_time_slot):
+        """Test that scheduler creates default settings if none exist."""
+        with test_app.app_context():
+            # Delete existing settings
+            GlobalSettings.query.delete()
+            db.session.commit()
+            
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Create user and availability
+            user = User(name='Test Worker', email='worker@colby.edu', role='user')
+            db.session.add(user)
+            db.session.commit()
+            
+            availability = UserAvailability(
+                user_id=user.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                preference_level=1
+            )
+            db.session.add(availability)
+            db.session.commit()
+            
+            # Verify no settings exist
+            assert GlobalSettings.query.first() is None
+            
+            result = run_auto_scheduler(week_start)
+            
+            # Settings should be created
+            settings = GlobalSettings.query.first()
+            assert settings is not None
+            assert settings.max_workers_per_shift == 3
+            assert settings.max_hours_per_user_per_week is None
+    
+    def test_run_auto_scheduler_skips_slots_with_no_availabilities(self, test_app, test_location, test_time_slot):
+        """Test that scheduler skips slots when no users are available."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # No availabilities created for this slot
+            result = run_auto_scheduler(week_start)
+            
+            # Should complete without errors, scheduling 0 assignments
+            assert result['scheduled'] == 0
+    
+    def test_run_auto_scheduler_handles_race_condition_overlap(self, test_app, test_location, test_time_slot):
+        """Test that scheduler handles race condition where assignment is created between check and assignment."""
+        with test_app.app_context():
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            # Set capacity to 2
+            settings = GlobalSettings.query.first()
+            settings.max_workers_per_shift = 2
+            db.session.commit()
+            
+            # Create two users
+            user1 = User(name='Worker 1', email='worker1@colby.edu', role='user')
+            user2 = User(name='Worker 2', email='worker2@colby.edu', role='user')
+            db.session.add_all([user1, user2])
+            db.session.commit()
+            
+            # Both users available
+            availability1 = UserAvailability(
+                user_id=user1.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                preference_level=1
+            )
+            availability2 = UserAvailability(
+                user_id=user2.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                preference_level=1
+            )
+            db.session.add_all([availability1, availability2])
+            db.session.commit()
+            
+            # Manually create an assignment for user1 to simulate race condition
+            assignment = Assignment(
+                user_id=user1.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(assignment)
+            db.session.commit()
+            
+            result = run_auto_scheduler(week_start)
+            
+            # Should only assign user2 (user1 already has assignment)
+            assert result['scheduled'] == 1
+            assert result['assignments'][0]['user_id'] == user2.id
