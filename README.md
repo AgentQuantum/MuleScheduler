@@ -176,31 +176,46 @@ Currently uses a simple stub authentication system:
 
 ### Backend Testing (pytest) 🐍
 
-The backend uses **pytest** for comprehensive testing with a **90% coverage requirement**.
+The backend uses **pytest** for comprehensive testing with a **95% branch coverage requirement**.
 
 **Directory Structure:**
 ```
 backend/tests/
 ├── unit/              # Unit tests for individual functions
 │   ├── test_models.py
-│   └── test_scheduler.py
+│   ├── test_scheduler.py
+│   └── test_slot_generator.py
 └── functional/        # Integration tests for API endpoints
     ├── test_auth.py
-    ├── test_views.py
-    └── test_assignments.py
+    ├── test_assignments.py
+    ├── test_availability.py
+    ├── test_locations.py
+    ├── test_settings.py
+    ├── test_shift_requirements.py
+    ├── test_time_slots.py
+    ├── test_users.py
+    └── test_weekly_overrides.py
 ```
 
 **Running Tests:**
 ```bash
 cd backend
-pytest                    # Run all tests (coverage enforced, min 90%)
+pytest                    # Run all tests (coverage enforced, min 95% branch)
 pytest -v                 # Verbose output
 pytest tests/unit/        # Run only unit tests
 pytest tests/functional/  # Run only functional tests
-pytest --cov=.            # With coverage report
+pytest --cov=. --cov-branch  # With branch coverage report
+pytest --cov=. --cov-report=html  # Generate HTML report (open htmlcov/index.html)
 ```
 
-**Coverage Requirement:** Tests will fail if coverage is below 90%. This is enforced both locally and in CI.
+**Coverage Requirement:** 
+- **Branch Coverage:** ≥ 95% (enforced in CI)
+- Tests will fail if branch coverage is below 95%. This is enforced both locally and in CI.
+
+**Viewing Coverage Reports:**
+- **GitHub Actions:** Check the "Backend Tests" job summary for a detailed coverage table showing branch and line coverage percentages
+- **Coverage Artifacts:** Download `coverage.xml` from the Actions run artifacts for detailed analysis
+- **Local HTML Report:** Run `pytest --cov=. --cov-branch --cov-report=html` and open `htmlcov/index.html` in your browser
 
 **Key Test Files:**
 - `test_scheduler.py` - Unit tests for scheduler service functions (calculate_hours, get_user_total_hours, has_overlapping_assignment, run_auto_scheduler, etc.)
@@ -247,7 +262,9 @@ GitHub Actions automatically runs tests on:
 1. **Backend Tests**
    - Installs Python dependencies
    - Runs flake8 linting
-   - Runs pytest with coverage (90% minimum)
+   - Runs pytest with branch coverage (95% minimum)
+   - Extracts and displays coverage percentages in job summary
+   - Uploads coverage.xml as artifact for detailed analysis
 
 2. **Frontend Tests**
    - Installs Node.js dependencies
