@@ -31,10 +31,8 @@ jobs:
       - name: Lint with flake8
         working-directory: ./backend
         run: |
-          # STRICT: Fail on syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # STRICT: Fail on style issues
-          flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
+          # Use .flake8 config for all linting rules
+          flake8 . --count --show-source --statistics
       
       - name: Run pytest with 95% branch coverage
         working-directory: ./backend
@@ -46,7 +44,7 @@ jobs:
             --cov-report=term-missing \
             --cov-fail-under=95
 
-      - name: Extract coverage percentages
+      - name: Extract and enforce branch coverage
         working-directory: ./backend
         run: |
           # Extract branch coverage from coverage.xml
@@ -56,6 +54,8 @@ jobs:
           echo "LINE_COV=$LINE_COV" >> $GITHUB_ENV
           echo "Branch Coverage: $BRANCH_COV%"
           echo "Line Coverage: $LINE_COV%"
+          # Fail if branch coverage is below 95%
+          python -c "import sys; cov = float('$BRANCH_COV'); print(f'Branch coverage: {cov}%'); sys.exit(0 if cov >= 95.0 else 1)"
 
       - name: Coverage Summary
         working-directory: ./backend
@@ -107,10 +107,25 @@ jobs:
       
       - name: Run Jest tests with coverage
         working-directory: ./frontend
-        run: npm run test:ci
+        run: npm run test:ci -- --coverage --coverageReporters=text --coverageReporters=json-summary
       
       - name: Coverage Summary
+        working-directory: ./frontend
         run: |
           echo "## 📊 Frontend Test Coverage" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Coverage thresholds enforced via Jest config**" >> $GITHUB_STEP_SUMMARY
+          # Extract coverage from json-summary if available
+          if [ -f coverage/coverage-summary.json ]; then
+            STMT=$(cat coverage/coverage-summary.json | python -c "import sys, json; d=json.load(sys.stdin); print(f\"{d['total']['statements']['pct']:.2f}\")")
+            BRANCH=$(cat coverage/coverage-summary.json | python -c "import sys, json; d=json.load(sys.stdin); print(f\"{d['total']['branches']['pct']:.2f}\")")
+            FUNC=$(cat coverage/coverage-summary.json | python -c "import sys, json; d=json.load(sys.stdin); print(f\"{d['total']['functions']['pct']:.2f}\")")
+            LINES=$(cat coverage/coverage-summary.json | python -c "import sys, json; d=json.load(sys.stdin); print(f\"{d['total']['lines']['pct']:.2f}\")")
+            echo "| Metric | Coverage |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|----------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Statements | $STMT% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Branches | $BRANCH% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Functions | $FUNC% |" >> $GITHUB_STEP_SUMMARY
+            echo "| Lines | $LINES% |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ **Coverage thresholds enforced via Jest config**" >> $GITHUB_STEP_SUMMARY
+          fi
