@@ -302,9 +302,7 @@ class TestUpdateShiftRequirementBranches:
     def test_update_location_id_only(self, client, admin_token, test_location, test_time_slot):
         """Test updating only location_id field."""
         with client.application.app_context():
-            from database import db
-            from models import ShiftRequirement, Location
-            from datetime import date, timedelta
+            from datetime import timedelta
             week_start = date.today() - timedelta(days=date.today().weekday())
             
             loc2 = Location(name='New Loc', description='Test')
@@ -335,9 +333,7 @@ class TestUpdateShiftRequirementBranches:
     def test_update_time_slot_id_only(self, client, admin_token, test_location, test_time_slot):
         """Test updating only time_slot_id field."""
         with client.application.app_context():
-            from database import db
-            from models import ShiftRequirement, TimeSlot
-            from datetime import date, timedelta, time
+            from datetime import timedelta
             week_start = date.today() - timedelta(days=date.today().weekday())
             
             slot2 = TimeSlot(day_of_week=2, start_time=time(14, 0), end_time=time(15, 0))
