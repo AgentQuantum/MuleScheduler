@@ -408,3 +408,101 @@ class TestRegenerateAllSlots:
         )
         assert response.status_code == 403
 
+
+class TestDayScheduleUpdateBranches:
+    """Additional tests for day schedule update edge cases."""
+
+    def test_update_day_schedule_deactivate(self, client, admin_token):
+        """Test deactivating a day schedule."""
+        with client.application.app_context():
+            from database import db
+            from models import DaySchedule
+            from datetime import time
+            schedule = DaySchedule(
+                day_of_week=5,
+                start_time=time(9, 0),
+                end_time=time(17, 0),
+                slot_duration_minutes=60,
+                is_active=True
+            )
+            db.session.add(schedule)
+            db.session.commit()
+            schedule_id = schedule.id
+
+        response = client.put(
+            f'/api/time-slots/day-schedules/{schedule_id}',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={'is_active': False}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['is_active'] is False
+
+    def test_update_day_schedule_slot_duration(self, client, admin_token):
+        """Test updating slot_duration_minutes."""
+        with client.application.app_context():
+            from database import db
+            from models import DaySchedule
+            from datetime import time
+            schedule = DaySchedule(
+                day_of_week=6,
+                start_time=time(10, 0),
+                end_time=time(14, 0),
+                slot_duration_minutes=30,
+                is_active=True
+            )
+            db.session.add(schedule)
+            db.session.commit()
+            schedule_id = schedule.id
+
+        response = client.put(
+            f'/api/time-slots/day-schedules/{schedule_id}',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={'slot_duration_minutes': 60}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['slot_duration_minutes'] == 60
+
+    def test_update_day_schedule_end_time(self, client, admin_token):
+        """Test updating just end_time."""
+        with client.application.app_context():
+            from database import db
+            from models import DaySchedule
+            from datetime import time
+            schedule = DaySchedule(
+                day_of_week=4,
+                start_time=time(8, 0),
+                end_time=time(12, 0),
+                slot_duration_minutes=30,
+                is_active=True
+            )
+            db.session.add(schedule)
+            db.session.commit()
+            schedule_id = schedule.id
+
+        response = client.put(
+            f'/api/time-slots/day-schedules/{schedule_id}',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={'end_time': '16:00'}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert '16:00' in data['end_time']
+
+
+class TestPreviewSlotsBranches:
+    """Additional tests for preview slots edge cases."""
+
+    def test_preview_slots_invalid_time_format(self, client):
+        """Preview with invalid time format returns 400."""
+        response = client.post(
+            '/api/time-slots/day-schedules/preview',
+            json={
+                'start_time': 'invalid',
+                'end_time': 'also-invalid',
+                'slot_duration_minutes': 30
+            }
+        )
+        assert response.status_code == 400
+

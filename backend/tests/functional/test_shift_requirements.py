@@ -268,3 +268,96 @@ class TestDeleteShiftRequirement:
         )
         assert response.status_code == 404
 
+
+class TestUpdateShiftRequirementBranches:
+    """Additional tests for update shift requirement edge cases."""
+
+    def test_update_only_required_workers(self, client, admin_token, test_location, test_time_slot):
+        """Test updating only required_workers field."""
+        with client.application.app_context():
+            from database import db
+            from models import ShiftRequirement
+            from datetime import date, timedelta
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            req = ShiftRequirement(
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                required_workers=2,
+                created_by=1
+            )
+            db.session.add(req)
+            db.session.commit()
+            req_id = req.id
+
+        response = client.put(
+            f'/api/shift-requirements/{req_id}',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={'required_workers': 5}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['required_workers'] == 5
+
+    def test_update_location_id_only(self, client, admin_token, test_location, test_time_slot):
+        """Test updating only location_id field."""
+        with client.application.app_context():
+            from datetime import timedelta
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            loc2 = Location(name='New Loc', description='Test')
+            db.session.add(loc2)
+            db.session.commit()
+            new_loc_id = loc2.id
+            
+            req = ShiftRequirement(
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                required_workers=2,
+                created_by=1
+            )
+            db.session.add(req)
+            db.session.commit()
+            req_id = req.id
+
+        response = client.put(
+            f'/api/shift-requirements/{req_id}',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={'location_id': new_loc_id}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['location_id'] == new_loc_id
+
+    def test_update_time_slot_id_only(self, client, admin_token, test_location, test_time_slot):
+        """Test updating only time_slot_id field."""
+        with client.application.app_context():
+            from datetime import timedelta
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            
+            slot2 = TimeSlot(day_of_week=2, start_time=time(14, 0), end_time=time(15, 0))
+            db.session.add(slot2)
+            db.session.commit()
+            new_slot_id = slot2.id
+            
+            req = ShiftRequirement(
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start,
+                required_workers=2,
+                created_by=1
+            )
+            db.session.add(req)
+            db.session.commit()
+            req_id = req.id
+
+        response = client.put(
+            f'/api/shift-requirements/{req_id}',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={'time_slot_id': new_slot_id}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['time_slot_id'] == new_slot_id
+
