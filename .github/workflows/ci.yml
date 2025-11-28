@@ -31,8 +31,10 @@ jobs:
       - name: Lint with flake8
         working-directory: ./backend
         run: |
-          # Fail on syntax errors or undefined names only
+          # STRICT: Fail on syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # STRICT: Fail on style issues
+          flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
       
       - name: Run pytest with 95% branch coverage
         working-directory: ./backend
@@ -43,23 +45,42 @@ jobs:
             --cov-report=xml \
             --cov-report=term-missing \
             --cov-fail-under=95
-      
-      - name: Generate coverage badge
+
+      - name: Extract coverage percentages
         working-directory: ./backend
         run: |
-          coverage-badge -o coverage-backend.svg -f
-          
-      - name: Upload backend coverage badge
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-backend-badge
-          path: backend/coverage-backend.svg
-      
+          # Extract branch coverage from coverage.xml
+          BRANCH_COV=$(python -c "import xml.etree.ElementTree as ET; tree = ET.parse('coverage.xml'); root = tree.getroot(); print(f\"{float(root.attrib['branch-rate']) * 100:.2f}\")")
+          LINE_COV=$(python -c "import xml.etree.ElementTree as ET; tree = ET.parse('coverage.xml'); root = tree.getroot(); print(f\"{float(root.attrib['line-rate']) * 100:.2f}\")")
+          echo "BRANCH_COV=$BRANCH_COV" >> $GITHUB_ENV
+          echo "LINE_COV=$LINE_COV" >> $GITHUB_ENV
+          echo "Branch Coverage: $BRANCH_COV%"
+          echo "Line Coverage: $LINE_COV%"
+
       - name: Coverage Summary
+        working-directory: ./backend
         run: |
+          BRANCH_COV=${{ env.BRANCH_COV }}
+          LINE_COV=${{ env.LINE_COV }}
+          BRANCH_STATUS=$(python -c "import sys; status = '✅ PASS' if float('$BRANCH_COV') >= 95.0 else '❌ FAIL'; print(status)")
           echo "## 📊 Backend Test Coverage" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Branch Coverage: 95%+ Required**" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Coverage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch Coverage** | **$BRANCH_COV%** | $BRANCH_STATUS |" >> $GITHUB_STEP_SUMMARY
+          echo "| Line Coverage | $LINE_COV% | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Requirement:** Branch coverage must be ≥ 95%" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "View detailed coverage in the [Actions tab](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload coverage XML
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: backend/coverage.xml
+          retention-days: 30
 
   frontend:
     name: Frontend Tests
@@ -82,7 +103,7 @@ jobs:
       
       - name: Run ESLint
         working-directory: ./frontend
-        run: npm run lint -- --max-warnings 100
+        run: npm run lint
       
       - name: Run Jest tests with coverage
         working-directory: ./frontend
