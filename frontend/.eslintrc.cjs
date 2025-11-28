@@ -20,5 +20,6 @@ module.exports = {
       varsIgnorePattern: '^_'
     }],
     'react-hooks/exhaustive-deps': 'warn',
+    'no-extra-semi': 'off',
   },
 }
