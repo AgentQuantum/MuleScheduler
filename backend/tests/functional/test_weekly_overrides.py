@@ -375,3 +375,77 @@ class TestDeleteWeekOverrides:
         )
         assert response.status_code == 400
 
+
+class TestUpdateOverrideBranches:
+    """Additional tests for update override edge cases."""
+
+    def test_update_only_slot_duration(self, client, admin_token):
+        """Test updating only slot_duration_minutes field."""
+        with client.application.app_context():
+            from database import db
+            from models import WeeklyScheduleOverride
+            from datetime import date, timedelta, time
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            override = WeeklyScheduleOverride(
+                week_start_date=week_start,
+                day_of_week=3,
+                start_time=time(9, 0),
+                end_time=time(17, 0),
+                slot_duration_minutes=30,
+                is_active=True
+            )
+            db.session.add(override)
+            db.session.commit()
+            override_id = override.id
+
+        response = client.put(
+            f'/api/weekly-overrides/{override_id}',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={'slot_duration_minutes': 60}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['slot_duration_minutes'] == 60
+
+    def test_update_only_is_active(self, client, admin_token):
+        """Test updating only is_active field."""
+        with client.application.app_context():
+            from database import db
+            from models import WeeklyScheduleOverride
+            from datetime import date, timedelta, time
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            override = WeeklyScheduleOverride(
+                week_start_date=week_start,
+                day_of_week=4,
+                start_time=time(10, 0),
+                end_time=time(18, 0),
+                slot_duration_minutes=30,
+                is_active=True
+            )
+            db.session.add(override)
+            db.session.commit()
+            override_id = override.id
+
+        response = client.put(
+            f'/api/weekly-overrides/{override_id}',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={'is_active': False}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['is_active'] is False
+
+
+class TestGetOverridesBranches:
+    """Additional tests for get overrides edge cases."""
+
+    def test_get_overrides_empty_week(self, client, admin_token):
+        """Test getting overrides for a week with no overrides."""
+        response = client.get(
+            '/api/weekly-overrides?week_start=2099-01-04',
+            headers={'Authorization': f'Bearer {admin_token}'}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data == []
+

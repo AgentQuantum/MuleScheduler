@@ -624,3 +624,200 @@ class TestAvailableWorkersEndpoint:
         data = response.get_json()
         assert len(data) >= 1
 
+
+class TestUpdateAssignmentBranches:
+    """Additional tests for update assignment edge cases."""
+
+    def test_update_assignment_without_user_id(self, client, admin_token, test_user, test_location, test_time_slot):
+        """Test updating assignment without user_id in data."""
+        with client.application.app_context():
+            from database import db
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            assignment = Assignment(
+                user_id=test_user['id'],
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(assignment)
+            db.session.commit()
+            assignment_id = assignment.id
+            original_user_id = assignment.user_id
+
+        response = client.put(
+            f'/api/assignments/{assignment_id}',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={}
+        )
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['user_id'] == original_user_id
+
+
+class TestMoveAssignmentBranches:
+    """Additional tests for move assignment edge cases."""
+
+    def test_move_assignment_invalid_time_slot_id(self, client, admin_token, test_user, test_location, test_time_slot):
+        """Test moving assignment with invalid time_slot_id returns 404."""
+        with client.application.app_context():
+            from database import db
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            assignment = Assignment(
+                user_id=test_user['id'],
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(assignment)
+            db.session.commit()
+            assignment_id = assignment.id
+
+        new_start = f'{week_start}T10:00:00'
+        new_end = f'{week_start}T11:00:00'
+
+        response = client.put(
+            f'/api/assignments/{assignment_id}/move',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={
+                'new_start': new_start,
+                'new_end': new_end,
+                'new_time_slot_id': 99999
+            }
+        )
+        assert response.status_code == 404
+        data = response.get_json()
+        assert 'Time slot not found' in data['error']
+
+    def test_move_assignment_overlapping(self, client, admin_token, test_user, test_location, test_time_slot):
+        """Test moving assignment to overlapping slot returns 400."""
+        with client.application.app_context():
+            from database import db
+            week_start = date.today() - timedelta(days=date.today().weekday())
+
+            assignment1 = Assignment(
+                user_id=test_user['id'],
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(assignment1)
+            db.session.commit()
+
+            loc2 = Location(name='Second Location', description='Test')
+            db.session.add(loc2)
+            db.session.commit()
+
+            assignment2 = Assignment(
+                user_id=test_user['id'],
+                location_id=loc2.id,
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(assignment2)
+            db.session.commit()
+            assignment2_id = assignment2.id
+
+        new_start = f'{week_start}T{test_time_slot["start_time"]}'
+        new_end = f'{week_start}T{test_time_slot["end_time"]}'
+
+        response = client.put(
+            f'/api/assignments/{assignment2_id}/move',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={
+                'new_start': new_start,
+                'new_end': new_end,
+                'new_time_slot_id': test_time_slot['id'],
+                'new_location_id': test_location['id']
+            }
+        )
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data['error'] == 'OVERLAP_FOR_USER'
+
+    def test_move_assignment_over_max_workers(self, client, admin_token, test_user, test_location, test_time_slot):
+        """Test moving assignment when max workers exceeded returns 400."""
+        with client.application.app_context():
+            from database import db
+            week_start = date.today() - timedelta(days=date.today().weekday())
+
+            settings = GlobalSettings.query.first()
+            if not settings:
+                settings = GlobalSettings(max_workers_per_shift=1)
+                db.session.add(settings)
+            else:
+                settings.max_workers_per_shift = 1
+            db.session.commit()
+
+            worker1 = User(name='Worker1', email='w1@colby.edu', role='user')
+            worker2 = User(name='Worker2', email='w2@colby.edu', role='user')
+            db.session.add_all([worker1, worker2])
+            db.session.commit()
+
+            assignment1 = Assignment(
+                user_id=worker1.id,
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(assignment1)
+            db.session.commit()
+
+            loc2 = Location(name='Third Location', description='Test')
+            db.session.add(loc2)
+            db.session.commit()
+
+            assignment2 = Assignment(
+                user_id=worker2.id,
+                location_id=loc2.id,
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(assignment2)
+            db.session.commit()
+            assignment2_id = assignment2.id
+
+        new_start = f'{week_start}T{test_time_slot["start_time"]}'
+        new_end = f'{week_start}T{test_time_slot["end_time"]}'
+
+        response = client.put(
+            f'/api/assignments/{assignment2_id}/move',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={
+                'new_start': new_start,
+                'new_end': new_end,
+                'new_time_slot_id': test_time_slot['id'],
+                'new_location_id': test_location['id']
+            }
+        )
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data['error'] == 'OVER_MAX_WORKERS'
+
+    def test_move_assignment_without_time_slot_id(self, client, admin_token, test_user, test_location, test_time_slot):
+        """Test moving assignment without time_slot_id tries to find matching slot."""
+        with client.application.app_context():
+            from database import db
+            week_start = date.today() - timedelta(days=date.today().weekday())
+            assignment = Assignment(
+                user_id=test_user['id'],
+                location_id=test_location['id'],
+                time_slot_id=test_time_slot['id'],
+                week_start_date=week_start
+            )
+            db.session.add(assignment)
+            db.session.commit()
+            assignment_id = assignment.id
+
+        new_start = f'{week_start}T10:00:00'
+        new_end = f'{week_start}T11:00:00'
+
+        response = client.put(
+            f'/api/assignments/{assignment_id}/move',
+            headers={'Authorization': f'Bearer {admin_token}'},
+            json={
+                'new_start': new_start,
+                'new_end': new_end
+            }
+        )
+        assert response.status_code in [200, 404]
+
