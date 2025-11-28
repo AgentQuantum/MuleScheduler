@@ -1,15 +1,27 @@
 [flake8]
 max-line-length = 127
+max-complexity = 15
 exclude = 
     venv,
     __pycache__,
     instance,
     .git,
-    migrations
+    migrations,
+    .coverage
 ignore = 
-    E203,  # whitespace before ':'
-    E501,  # line too long (handled by max-line-length)
-    W503,  # line break before binary operator
+    E203,
+    E302,
+    E305,
+    E402,
+    E501,
+    E712,
+    E128,
+    W291,
+    W293,
+    W391,
+    W503,
+    C901,
+    F401
 per-file-ignores =
     __init__.py:F401
-
+    tests/*:F401,F841

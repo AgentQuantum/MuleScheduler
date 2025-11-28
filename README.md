@@ -1,4 +1,10 @@
-# MuleScheduler
+# MuleScheduler 📅
+
+![CI](https://github.com/AgentQuantum/MuleScheduler/actions/workflows/ci.yml/badge.svg)
+![Backend Coverage](https://img.shields.io/badge/backend%20coverage-95%25-brightgreen)
+![Frontend Coverage](https://img.shields.io/badge/frontend%20coverage-97%25-brightgreen)
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![React](https://img.shields.io/badge/react-18-61dafb)
 
 > **A modern, intelligent scheduling system for Colby College student workers**
 

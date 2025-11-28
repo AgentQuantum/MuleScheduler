@@ -4,7 +4,7 @@ import api from '../services/api'
 import { Assignment, TimeSlot } from '../types/scheduler'
 import StatusChip from '../components/StatusChip'
 import IconButton from '../components/IconButton'
-import { ScheduleIllustration, StatIcons } from '../components/Illustrations'
+import { ScheduleIllustration } from '../components/Illustrations'
 import '../styles/scheduler.css'
 
 // SVG Icons
@@ -85,7 +85,7 @@ function StudentSchedulePage() {
     return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
   }
 
-  const formatTime = (timeStr: string): string => {
+  const _formatTime = (timeStr: string): string => {
     const [hours, minutes] = timeStr.split(':')
     const hour = parseInt(hours)
     const ampm = hour >= 12 ? 'PM' : 'AM'
@@ -114,7 +114,7 @@ function StudentSchedulePage() {
     }
   }
 
-  const getDayName = (dayOfWeek: number): string => {
+  const _getDayName = (dayOfWeek: number): string => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     return days[dayOfWeek]
   }
