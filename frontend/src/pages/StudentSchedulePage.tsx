@@ -85,7 +85,6 @@ function StudentSchedulePage() {
     return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _formatTime = (timeStr: string): string => {
     const [hours, minutes] = timeStr.split(':')
     const hour = parseInt(hours)
@@ -115,7 +114,6 @@ function StudentSchedulePage() {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _getDayName = (dayOfWeek: number): string => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     return days[dayOfWeek]
