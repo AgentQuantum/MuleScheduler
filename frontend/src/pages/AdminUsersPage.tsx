@@ -1,39 +1,39 @@
-import { useState, useEffect } from 'react'
-import { Container, Card, Table, Form, InputGroup, Button, Row, Col } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom'
-import api from '../services/api'
-import { User } from '../types/scheduler'
+import { useState, useEffect } from 'react';
+import { Container, Card, Table, Form, InputGroup, Button, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import { User } from '../types/scheduler';
 
 function AdminUsersPage() {
-  const navigate = useNavigate()
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
+  const navigate = useNavigate();
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    loadUsers()
-  }, [])
+    loadUsers();
+  }, []);
 
   const loadUsers = async () => {
     try {
-      const response = await api.get('/users')
-      setUsers(response.data)
+      const response = await api.get('/users');
+      setUsers(response.data);
     } catch (err) {
-      console.error('Failed to load users:', err)
+      console.error('Failed to load users:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const filteredUsers = users.filter(u => {
-    if (!searchQuery) return true
-    const query = searchQuery.toLowerCase()
+  const filteredUsers = users.filter((u) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
     return (
       u.name.toLowerCase().includes(query) ||
       u.email.toLowerCase().includes(query) ||
       u.role.toLowerCase().includes(query)
-    )
-  })
+    );
+  });
 
   if (loading) {
     return (
@@ -44,7 +44,7 @@ function AdminUsersPage() {
           </div>
         </div>
       </Container>
-    )
+    );
   }
 
   return (
@@ -78,12 +78,14 @@ function AdminUsersPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map(user => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id}>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>
-                    <span className={`badge ${user.role === 'admin' ? 'bg-primary' : 'bg-secondary'}`}>
+                    <span
+                      className={`badge ${user.role === 'admin' ? 'bg-primary' : 'bg-secondary'}`}
+                    >
                       {user.role}
                     </span>
                   </td>
@@ -103,8 +105,7 @@ function AdminUsersPage() {
         </Card.Body>
       </Card>
     </Container>
-  )
+  );
 }
 
-export default AdminUsersPage
-
+export default AdminUsersPage;

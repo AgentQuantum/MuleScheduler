@@ -4,21 +4,29 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'DM Sans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #F4F8FF;
+  background-color: #f4f8ff;
   color: #000000;
 }
 
@@ -32,7 +40,7 @@ body {
 }
 
 *:focus-visible {
-  outline: 2px solid var(--ms-sky, #7DD3FC);
+  outline: 2px solid var(--ms-sky, #7dd3fc);
   outline-offset: 2px;
 }
 
@@ -48,18 +56,18 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F4F8FF;
+  background: #f4f8ff;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #cbd5e1;
   border-radius: 5px;
-  border: 2px solid #F4F8FF;
+  border: 2px solid #f4f8ff;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #94a3b8;
 }
 
 /* Selection styling */
@@ -69,13 +77,18 @@ html {
 }
 
 /* Improve form elements appearance */
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   font-family: inherit;
 }
 
 /* Disable animations for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -88,7 +101,7 @@ input, select, textarea, button {
   body {
     background: white;
   }
-  
+
   .ms-sidebar,
   .ms-topbar,
   .ms-toolbar,
@@ -107,7 +120,7 @@ input, select, textarea, button {
 .dropdown-menu {
   border-radius: 14px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   padding: 8px;
 }
 
@@ -118,12 +131,12 @@ input, select, textarea, button {
 }
 
 .dropdown-item:hover {
-  background: #F4F8FF;
+  background: #f4f8ff;
 }
 
 /* List group items */
 .list-group-item {
-  border-color: #E5E7EB;
+  border-color: #e5e7eb;
 }
 
 .list-group-flush > .list-group-item:first-child {

@@ -2,10 +2,13 @@
 Comprehensive tests for weekly overrides routes.
 Tests CRUD operations for /api/weekly-overrides endpoints.
 """
+
+from datetime import date, time
+
 import pytest
+
 from app import app, db
-from models import WeeklyScheduleOverride, DaySchedule
-from datetime import time, date
+from models import DaySchedule, WeeklyScheduleOverride
 
 
 class TestGetWeeklyOverrides:
@@ -14,8 +17,8 @@ class TestGetWeeklyOverrides:
     def test_get_weekly_overrides_as_admin(self, client, admin_token):
         """Admin can get weekly overrides."""
         response = client.get(
-            '/api/weekly-overrides?week_start=2024-01-01',
-            headers={'Authorization': f'Bearer {admin_token}'}
+            "/api/weekly-overrides?week_start=2024-01-01",
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
         assert isinstance(response.get_json(), list)
@@ -23,16 +26,15 @@ class TestGetWeeklyOverrides:
     def test_get_weekly_overrides_as_user_forbidden(self, client, auth_token):
         """Regular user cannot get weekly overrides."""
         response = client.get(
-            '/api/weekly-overrides?week_start=2024-01-01',
-            headers={'Authorization': f'Bearer {auth_token}'}
+            "/api/weekly-overrides?week_start=2024-01-01",
+            headers={"Authorization": f"Bearer {auth_token}"},
         )
         assert response.status_code == 403
 
     def test_get_weekly_overrides_missing_week_start(self, client, admin_token):
         """Missing week_start returns 400."""
         response = client.get(
-            '/api/weekly-overrides',
-            headers={'Authorization': f'Bearer {admin_token}'}
+            "/api/weekly-overrides", headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 400
 
@@ -43,32 +45,32 @@ class TestCreateWeeklyOverride:
     def test_create_weekly_override_as_admin(self, client, admin_token):
         """Admin can create weekly override."""
         response = client.post(
-            '/api/weekly-overrides',
+            "/api/weekly-overrides",
             json={
-                'week_start_date': '2024-02-01',
-                'day_of_week': 1,
-                'start_time': '09:00',
-                'end_time': '17:00',
-                'slot_duration_minutes': 30
+                "week_start_date": "2024-02-01",
+                "day_of_week": 1,
+                "start_time": "09:00",
+                "end_time": "17:00",
+                "slot_duration_minutes": 30,
             },
-            headers={'Authorization': f'Bearer {admin_token}'}
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 201
         data = response.get_json()
-        assert data['day_of_week'] == 1
-        assert 'day_name' in data
+        assert data["day_of_week"] == 1
+        assert "day_name" in data
 
     def test_create_weekly_override_as_user_forbidden(self, client, auth_token):
         """Regular user cannot create weekly override."""
         response = client.post(
-            '/api/weekly-overrides',
+            "/api/weekly-overrides",
             json={
-                'week_start_date': '2024-02-01',
-                'day_of_week': 1,
-                'start_time': '09:00',
-                'end_time': '17:00'
+                "week_start_date": "2024-02-01",
+                "day_of_week": 1,
+                "start_time": "09:00",
+                "end_time": "17:00",
             },
-            headers={'Authorization': f'Bearer {auth_token}'}
+            headers={"Authorization": f"Bearer {auth_token}"},
         )
         assert response.status_code == 403
 
@@ -76,42 +78,42 @@ class TestCreateWeeklyOverride:
         """Creating override for existing day/week updates it."""
         # Create first
         response1 = client.post(
-            '/api/weekly-overrides',
+            "/api/weekly-overrides",
             json={
-                'week_start_date': '2024-03-01',
-                'day_of_week': 2,
-                'start_time': '09:00',
-                'end_time': '17:00'
+                "week_start_date": "2024-03-01",
+                "day_of_week": 2,
+                "start_time": "09:00",
+                "end_time": "17:00",
             },
-            headers={'Authorization': f'Bearer {admin_token}'}
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response1.status_code == 201
-        
+
         # Create again - should update
         response2 = client.post(
-            '/api/weekly-overrides',
+            "/api/weekly-overrides",
             json={
-                'week_start_date': '2024-03-01',
-                'day_of_week': 2,
-                'start_time': '10:00',
-                'end_time': '18:00',
-                'is_active': False
+                "week_start_date": "2024-03-01",
+                "day_of_week": 2,
+                "start_time": "10:00",
+                "end_time": "18:00",
+                "is_active": False,
             },
-            headers={'Authorization': f'Bearer {admin_token}'}
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response2.status_code == 200
 
     def test_create_weekly_override_with_seconds(self, client, admin_token):
         """Override can be created with seconds in time format."""
         response = client.post(
-            '/api/weekly-overrides',
+            "/api/weekly-overrides",
             json={
-                'week_start_date': '2024-04-01',
-                'day_of_week': 3,
-                'start_time': '09:00:00',
-                'end_time': '17:00:00'
+                "week_start_date": "2024-04-01",
+                "day_of_week": 3,
+                "start_time": "09:00:00",
+                "end_time": "17:00:00",
             },
-            headers={'Authorization': f'Bearer {admin_token}'}
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 201
 
@@ -128,21 +130,21 @@ class TestUpdateWeeklyOverride:
                 start_time=time(9, 0),
                 end_time=time(17, 0),
                 slot_duration_minutes=30,
-                is_active=True
+                is_active=True,
             )
             db.session.add(override)
             db.session.commit()
             override_id = override.id
-        
+
         client = test_app.test_client()
         response = client.put(
-            f'/api/weekly-overrides/{override_id}',
-            json={'start_time': '10:00', 'is_active': False},
-            headers={'Authorization': f'Bearer {admin_token}'}
+            f"/api/weekly-overrides/{override_id}",
+            json={"start_time": "10:00", "is_active": False},
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
         data = response.get_json()
-        assert data['is_active'] == False
+        assert data["is_active"] is False
 
     def test_update_weekly_override_all_fields(self, test_app, admin_token):
         """Admin can update all fields."""
@@ -153,22 +155,22 @@ class TestUpdateWeeklyOverride:
                 start_time=time(9, 0),
                 end_time=time(17, 0),
                 slot_duration_minutes=30,
-                is_active=True
+                is_active=True,
             )
             db.session.add(override)
             db.session.commit()
             override_id = override.id
-        
+
         client = test_app.test_client()
         response = client.put(
-            f'/api/weekly-overrides/{override_id}',
+            f"/api/weekly-overrides/{override_id}",
             json={
-                'start_time': '08:00',
-                'end_time': '18:00',
-                'slot_duration_minutes': 60,
-                'is_active': True
+                "start_time": "08:00",
+                "end_time": "18:00",
+                "slot_duration_minutes": 60,
+                "is_active": True,
             },
-            headers={'Authorization': f'Bearer {admin_token}'}
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
 
@@ -181,26 +183,26 @@ class TestUpdateWeeklyOverride:
                 start_time=time(9, 0),
                 end_time=time(17, 0),
                 slot_duration_minutes=30,
-                is_active=True
+                is_active=True,
             )
             db.session.add(override)
             db.session.commit()
             override_id = override.id
-        
+
         client = test_app.test_client()
         response = client.put(
-            f'/api/weekly-overrides/{override_id}',
-            json={'is_active': False},
-            headers={'Authorization': f'Bearer {auth_token}'}
+            f"/api/weekly-overrides/{override_id}",
+            json={"is_active": False},
+            headers={"Authorization": f"Bearer {auth_token}"},
         )
         assert response.status_code == 403
 
     def test_update_nonexistent_override(self, client, admin_token):
         """Updating nonexistent override returns 404."""
         response = client.put(
-            '/api/weekly-overrides/99999',
-            json={'is_active': False},
-            headers={'Authorization': f'Bearer {admin_token}'}
+            "/api/weekly-overrides/99999",
+            json={"is_active": False},
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 404
 
@@ -217,16 +219,16 @@ class TestDeleteWeeklyOverride:
                 start_time=time(9, 0),
                 end_time=time(17, 0),
                 slot_duration_minutes=30,
-                is_active=True
+                is_active=True,
             )
             db.session.add(override)
             db.session.commit()
             override_id = override.id
-        
+
         client = test_app.test_client()
         response = client.delete(
-            f'/api/weekly-overrides/{override_id}',
-            headers={'Authorization': f'Bearer {admin_token}'}
+            f"/api/weekly-overrides/{override_id}",
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
 
@@ -239,24 +241,23 @@ class TestDeleteWeeklyOverride:
                 start_time=time(9, 0),
                 end_time=time(17, 0),
                 slot_duration_minutes=30,
-                is_active=True
+                is_active=True,
             )
             db.session.add(override)
             db.session.commit()
             override_id = override.id
-        
+
         client = test_app.test_client()
         response = client.delete(
-            f'/api/weekly-overrides/{override_id}',
-            headers={'Authorization': f'Bearer {auth_token}'}
+            f"/api/weekly-overrides/{override_id}",
+            headers={"Authorization": f"Bearer {auth_token}"},
         )
         assert response.status_code == 403
 
     def test_delete_nonexistent_override(self, client, admin_token):
         """Deleting nonexistent override returns 404."""
         response = client.delete(
-            '/api/weekly-overrides/99999',
-            headers={'Authorization': f'Bearer {admin_token}'}
+            "/api/weekly-overrides/99999", headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 404
 
@@ -273,16 +274,16 @@ class TestCreateFromStandard:
                 start_time=time(9, 0),
                 end_time=time(17, 0),
                 slot_duration_minutes=30,
-                is_active=True
+                is_active=True,
             )
             db.session.add(schedule)
             db.session.commit()
-        
+
         client = test_app.test_client()
         response = client.post(
-            '/api/weekly-overrides/create-from-standard',
-            json={'week_start_date': '2024-07-01'},
-            headers={'Authorization': f'Bearer {admin_token}'}
+            "/api/weekly-overrides/create-from-standard",
+            json={"week_start_date": "2024-07-01"},
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 201
         data = response.get_json()
@@ -291,9 +292,9 @@ class TestCreateFromStandard:
     def test_create_from_standard_as_user_forbidden(self, client, auth_token):
         """Regular user cannot create from standard."""
         response = client.post(
-            '/api/weekly-overrides/create-from-standard',
-            json={'week_start_date': '2024-07-01'},
-            headers={'Authorization': f'Bearer {auth_token}'}
+            "/api/weekly-overrides/create-from-standard",
+            json={"week_start_date": "2024-07-01"},
+            headers={"Authorization": f"Bearer {auth_token}"},
         )
         assert response.status_code == 403
 
@@ -306,10 +307,10 @@ class TestCreateFromStandard:
                 start_time=time(9, 0),
                 end_time=time(17, 0),
                 slot_duration_minutes=30,
-                is_active=True
+                is_active=True,
             )
             db.session.add(schedule)
-            
+
             # Create existing override
             override = WeeklyScheduleOverride(
                 week_start_date=date(2024, 7, 8),
@@ -317,16 +318,16 @@ class TestCreateFromStandard:
                 start_time=time(10, 0),
                 end_time=time(16, 0),
                 slot_duration_minutes=60,
-                is_active=True
+                is_active=True,
             )
             db.session.add(override)
             db.session.commit()
-        
+
         client = test_app.test_client()
         response = client.post(
-            '/api/weekly-overrides/create-from-standard',
-            json={'week_start_date': '2024-07-08'},
-            headers={'Authorization': f'Bearer {admin_token}'}
+            "/api/weekly-overrides/create-from-standard",
+            json={"week_start_date": "2024-07-08"},
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 201
 
@@ -345,33 +346,32 @@ class TestDeleteWeekOverrides:
                     start_time=time(9, 0),
                     end_time=time(17, 0),
                     slot_duration_minutes=30,
-                    is_active=True
+                    is_active=True,
                 )
                 db.session.add(override)
             db.session.commit()
-        
+
         client = test_app.test_client()
         response = client.delete(
-            '/api/weekly-overrides/delete-week?week_start=2024-08-01',
-            headers={'Authorization': f'Bearer {admin_token}'}
+            "/api/weekly-overrides/delete-week?week_start=2024-08-01",
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
         data = response.get_json()
-        assert 'Deleted' in data['message']
+        assert "Deleted" in data["message"]
 
     def test_delete_week_overrides_as_user_forbidden(self, client, auth_token):
         """Regular user cannot delete week overrides."""
         response = client.delete(
-            '/api/weekly-overrides/delete-week?week_start=2024-08-01',
-            headers={'Authorization': f'Bearer {auth_token}'}
+            "/api/weekly-overrides/delete-week?week_start=2024-08-01",
+            headers={"Authorization": f"Bearer {auth_token}"},
         )
         assert response.status_code == 403
 
     def test_delete_week_overrides_missing_week_start(self, client, admin_token):
         """Missing week_start returns 400."""
         response = client.delete(
-            '/api/weekly-overrides/delete-week',
-            headers={'Authorization': f'Bearer {admin_token}'}
+            "/api/weekly-overrides/delete-week", headers={"Authorization": f"Bearer {admin_token}"}
         )
         assert response.status_code == 400
 
@@ -382,9 +382,11 @@ class TestUpdateOverrideBranches:
     def test_update_only_slot_duration(self, client, admin_token):
         """Test updating only slot_duration_minutes field."""
         with client.application.app_context():
+            from datetime import date, time, timedelta
+
             from database import db
             from models import WeeklyScheduleOverride
-            from datetime import date, timedelta, time
+
             week_start = date.today() - timedelta(days=date.today().weekday())
             override = WeeklyScheduleOverride(
                 week_start_date=week_start,
@@ -392,27 +394,29 @@ class TestUpdateOverrideBranches:
                 start_time=time(9, 0),
                 end_time=time(17, 0),
                 slot_duration_minutes=30,
-                is_active=True
+                is_active=True,
             )
             db.session.add(override)
             db.session.commit()
             override_id = override.id
 
         response = client.put(
-            f'/api/weekly-overrides/{override_id}',
-            headers={'Authorization': f'Bearer {admin_token}'},
-            json={'slot_duration_minutes': 60}
+            f"/api/weekly-overrides/{override_id}",
+            headers={"Authorization": f"Bearer {admin_token}"},
+            json={"slot_duration_minutes": 60},
         )
         assert response.status_code == 200
         data = response.get_json()
-        assert data['slot_duration_minutes'] == 60
+        assert data["slot_duration_minutes"] == 60
 
     def test_update_only_is_active(self, client, admin_token):
         """Test updating only is_active field."""
         with client.application.app_context():
+            from datetime import date, time, timedelta
+
             from database import db
             from models import WeeklyScheduleOverride
-            from datetime import date, timedelta, time
+
             week_start = date.today() - timedelta(days=date.today().weekday())
             override = WeeklyScheduleOverride(
                 week_start_date=week_start,
@@ -420,20 +424,20 @@ class TestUpdateOverrideBranches:
                 start_time=time(10, 0),
                 end_time=time(18, 0),
                 slot_duration_minutes=30,
-                is_active=True
+                is_active=True,
             )
             db.session.add(override)
             db.session.commit()
             override_id = override.id
 
         response = client.put(
-            f'/api/weekly-overrides/{override_id}',
-            headers={'Authorization': f'Bearer {admin_token}'},
-            json={'is_active': False}
+            f"/api/weekly-overrides/{override_id}",
+            headers={"Authorization": f"Bearer {admin_token}"},
+            json={"is_active": False},
         )
         assert response.status_code == 200
         data = response.get_json()
-        assert data['is_active'] is False
+        assert data["is_active"] is False
 
 
 class TestGetOverridesBranches:
@@ -442,10 +446,9 @@ class TestGetOverridesBranches:
     def test_get_overrides_empty_week(self, client, admin_token):
         """Test getting overrides for a week with no overrides."""
         response = client.get(
-            '/api/weekly-overrides?week_start=2099-01-04',
-            headers={'Authorization': f'Bearer {admin_token}'}
+            "/api/weekly-overrides?week_start=2099-01-04",
+            headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
         data = response.get_json()
         assert data == []
-
