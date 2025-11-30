@@ -1,9 +1,9 @@
 /**
  * Test suite for Navbar component.
  */
-import { render, screen } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
-import Navbar from '../components/Navbar'
+import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 // Mock AuthProvider and useAuth
 jest.mock('../contexts/AuthContext', () => ({
@@ -13,14 +13,14 @@ jest.mock('../contexts/AuthContext', () => ({
       id: 1,
       name: 'Test User',
       email: 'test@colby.edu',
-      role: 'user'
+      role: 'user',
     },
     token: 'test-token',
     login: jest.fn(),
     logout: jest.fn(),
-    loading: false
-  })
-}))
+    loading: false,
+  }),
+}));
 
 describe('Navbar', () => {
   it('renders MuleScheduler brand', () => {
@@ -28,8 +28,8 @@ describe('Navbar', () => {
       <BrowserRouter>
         <Navbar />
       </BrowserRouter>
-    )
-    
-    expect(screen.getByText('MuleScheduler')).toBeInTheDocument()
-  })
-})
+    );
+
+    expect(screen.getByText('MuleScheduler')).toBeInTheDocument();
+  });
+});
