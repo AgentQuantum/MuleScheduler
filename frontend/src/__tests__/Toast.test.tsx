@@ -1,7 +1,7 @@
 /**
  * Tests for Toast component.
  */
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { ToastProvider, useToast } from '../components/Toast';
 
 // Test component to trigger toasts

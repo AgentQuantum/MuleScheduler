@@ -201,7 +201,7 @@ const DraggableShiftItem: React.FC<DraggableShiftItemProps> = ({ shift, timeSlot
 
 const UnassignedShiftsPanel: React.FC<UnassignedShiftsPanelProps> = ({
   shifts,
-  locations,
+  locations: _locations,
   timeSlots,
 }) => {
   const timeSlotsById = new Map(timeSlots.map((ts) => [ts.id, ts]));

@@ -70,7 +70,7 @@ const SortableShiftCard: React.FC<SortableShiftCardProps> = ({ assignment, timeS
 const WeeklyScheduleGrid: React.FC<WeeklyScheduleGridProps> = ({
   assignments,
   users,
-  locations,
+  locations: _locations,
   timeSlots,
   weekStart,
   onAssignmentMove,
@@ -89,11 +89,6 @@ const WeeklyScheduleGrid: React.FC<WeeklyScheduleGridProps> = ({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
-  const getDayName = (dayOfWeek: number): string => {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days[dayOfWeek];
-  };
 
   const getFullDayName = (dayOfWeek: number): string => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

@@ -31,8 +31,6 @@ describe('UserAvatar', () => {
     const { container: container2 } = render(<UserAvatar name="Jane" email="john@test.com" />);
 
     // Same email = same color, even with different names
-    const style1 = window.getComputedStyle(container1.firstChild as Element);
-    const style2 = window.getComputedStyle(container2.firstChild as Element);
     // Both should have a background (gradient)
     expect(container1.firstChild).toBeInTheDocument();
     expect(container2.firstChild).toBeInTheDocument();

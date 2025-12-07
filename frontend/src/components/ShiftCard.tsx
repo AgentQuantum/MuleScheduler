@@ -52,14 +52,13 @@ const ShiftCard: React.FC<ShiftCardProps> = ({
   timeSlot,
   onClick,
   isDragging = false,
-  variant = 'default',
+  variant: _variant = 'default',
   showAvatar = false,
 }) => {
   const timeRange = formatTimeRange(timeSlot || assignment.time_slot);
   const workerName = assignment.user_name || 'Unassigned';
   const locationName = assignment.location_name || 'Unknown';
   const locColorIndex = getLocationColorIndex(locationName);
-  const isUnassigned = !assignment.user_name;
 
   return (
     <div

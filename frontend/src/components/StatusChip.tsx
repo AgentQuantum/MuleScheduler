@@ -185,7 +185,7 @@ const VariantIcons: Record<StatusChipVariant, React.ReactNode> = {
 const StatusChip: React.FC<StatusChipProps> = ({
   variant = 'default',
   label,
-  emoji,
+  emoji: _emoji,
   icon,
   onClick,
   isFilter = false,

@@ -105,7 +105,7 @@ const ShiftBlock: React.FC<{
   color: (typeof WORKER_COLORS)[0];
   onRemove: () => void;
   onClick: () => void;
-}> = ({ assignment, user, timeSlot, color, onRemove, onClick }) => {
+}> = ({ assignment, user, timeSlot: _timeSlot, color, onRemove, onClick }) => {
   return (
     <div
       className="calendar-shift-block"
@@ -202,7 +202,7 @@ const ShiftScheduleGrid: React.FC<ShiftScheduleGridProps> = ({
   onAssignWorker,
   onRemoveAssignment,
   onAssignmentClick,
-  onAlert,
+  onAlert: _onAlert,
   allUsers,
 }) => {
   const [activeWorker, setActiveWorker] = useState<User | null>(null);
@@ -212,7 +212,6 @@ const ShiftScheduleGrid: React.FC<ShiftScheduleGridProps> = ({
 
   // All 7 days of the week
   const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
-  const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   // Get configured days (days that have time slots)
@@ -239,13 +238,6 @@ const ShiftScheduleGrid: React.FC<ShiftScheduleGridProps> = ({
     new Set(timeSlots.map((ts) => `${ts.start_time}-${ts.end_time}`))
   ).sort();
 
-  const formatTime = (time: string): string => {
-    const [hours, minutes] = time.split(':');
-    const h = parseInt(hours);
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const hour12 = h % 12 || 12;
-    return `${hour12}${minutes !== '00' ? ':' + minutes : ''} ${ampm}`;
-  };
 
   const formatTimeShort = (time: string): string => {
     const [hours, minutes] = time.split(':');
