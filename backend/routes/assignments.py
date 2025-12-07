@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, jsonify, request
 
 from database import db
-from models import Assignment, GlobalSettings, TimeSlot, User, UserAvailability
+from models import Assignment, GlobalSettings, Location, TimeSlot, User, UserAvailability
 from routes.auth import get_current_user
 from services.scheduler import run_auto_scheduler
 
@@ -145,8 +145,65 @@ def update_assignment(assignment_id):
     assignment = Assignment.query.get_or_404(assignment_id)
     data = request.get_json()
 
+    # Update assigned user
     if "user_id" in data:
         assignment.user_id = data["user_id"]
+        assignment.assigned_by = user.id
+
+    # Update location and/or time slot for this assignment (without moving weeks)
+    if "location_id" in data or "time_slot_id" in data:
+        new_location_id = data.get("location_id", assignment.location_id)
+        new_time_slot_id = data.get("time_slot_id", assignment.time_slot_id)
+
+        # Validate location and time slot exist
+        new_location = Location.query.get(new_location_id)
+        new_time_slot = TimeSlot.query.get(new_time_slot_id)
+        if not new_location or not new_time_slot:
+            return jsonify({"error": "Location or time slot not found"}), 404
+
+        # Validate overlapping shift for the same user (exclude current assignment)
+        overlapping = Assignment.query.filter(
+            Assignment.user_id == assignment.user_id,
+            Assignment.id != assignment.id,
+            Assignment.week_start_date == assignment.week_start_date,
+            Assignment.time_slot_id == new_time_slot_id,
+        ).first()
+        if overlapping:
+            return (
+                jsonify(
+                    {
+                        "error": "OVERLAP_FOR_USER",
+                        "message": "This worker is already scheduled at that time",
+                    }
+                ),
+                400,
+            )
+
+        # Validate max workers per shift (exclude current assignment)
+        settings = GlobalSettings.query.first()
+        max_workers = settings.max_workers_per_shift if settings else 3
+        current_count = Assignment.query.filter(
+            Assignment.location_id == new_location_id,
+            Assignment.time_slot_id == new_time_slot_id,
+            Assignment.week_start_date == assignment.week_start_date,
+            Assignment.id != assignment.id,
+        ).count()
+
+        if current_count >= max_workers:
+            return (
+                jsonify(
+                    {
+                        "error": "OVER_MAX_WORKERS",
+                        "message": f"Maximum {max_workers} workers already scheduled in that slot",
+                    }
+                ),
+                400,
+            )
+
+        assignment.location_id = new_location_id
+        assignment.location = new_location  # keep relationship in sync
+        assignment.time_slot_id = new_time_slot_id
+        assignment.time_slot = new_time_slot  # keep relationship in sync
         assignment.assigned_by = user.id
 
     db.session.commit()
@@ -201,6 +258,11 @@ def move_assignment(assignment_id):
                 return jsonify({"error": "No matching time slot found"}), 404
             new_time_slot_id = new_time_slot.id
 
+    # Validate the new location exists
+    new_location = Location.query.get(new_location_id)
+    if not new_location:
+        return jsonify({"error": "Location not found"}), 404
+
     # Calculate new week_start_date (Monday of the week containing new_start)
     new_week_start = new_start.date() - timedelta(days=new_start.weekday())
 
@@ -247,7 +309,9 @@ def move_assignment(assignment_id):
 
     # Update assignment
     assignment.time_slot_id = new_time_slot_id
+    assignment.time_slot = new_time_slot  # keep relationship in sync
     assignment.location_id = new_location_id
+    assignment.location = new_location  # keep relationship in sync
     assignment.week_start_date = new_week_start
     assignment.assigned_by = user.id
 
