@@ -126,6 +126,29 @@ function AdminSchedulePage() {
           });
         }
       }
+
+      // Optimistically update the selected assignment so the drawer reflects the change immediately
+      setSelectedAssignment((prev) => {
+        if (!prev || prev.id !== assignmentId) return prev;
+
+        const nextUserId = updates.userId ?? prev.user_id;
+        const nextLocationId = updates.locationId ?? prev.location_id;
+        const nextTimeSlotId = updates.timeSlotId ?? prev.time_slot_id;
+
+        const nextLocationName =
+          updates.locationId !== undefined
+            ? data.locations?.find((l) => l.id === nextLocationId)?.name || prev.location_name
+            : prev.location_name;
+
+        return {
+          ...prev,
+          user_id: nextUserId,
+          location_id: nextLocationId,
+          time_slot_id: nextTimeSlotId,
+          location_name: nextLocationName,
+        };
+      });
+
       showToast('success', 'Shift updated successfully!');
       refreshData();
     } catch (err: any) {
