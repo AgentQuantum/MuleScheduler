@@ -67,7 +67,7 @@ function AdminSchedulePage() {
     return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
   };
 
-  // @ts-ignore unused handler placeholder
+  // @ts-expect-error unused handler placeholder
   const _handleAssignmentMove = async (
     assignmentId: number,
     target: { userId: number; locationId: number; timeSlotId: number }

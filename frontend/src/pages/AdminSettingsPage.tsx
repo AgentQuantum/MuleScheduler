@@ -503,7 +503,7 @@ function AdminSettingsPage() {
     return Math.floor((endMinutes - startMinutes) / durationMinutes);
   };
 
-  // @ts-ignore unused handler placeholder
+  // @ts-expect-error unused handler placeholder
   const _handleDeleteTimeSlot = async (id: number) => {
     if (
       window.confirm(
@@ -520,7 +520,7 @@ function AdminSettingsPage() {
     }
   };
 
-  // @ts-ignore unused handler placeholder
+  // @ts-expect-error unused handler placeholder
   const _handleEditTimeSlot = (slot: TimeSlot) => {
     setEditingTimeSlot(slot);
     setTimeSlotForm({
@@ -536,7 +536,7 @@ function AdminSettingsPage() {
     return days[dayOfWeek];
   };
 
-  // @ts-ignore unused helper placeholder
+  // @ts-expect-error unused helper placeholder
   const _formatTime = (timeStr: string) => {
     const [hours, minutes] = timeStr.split(':');
     const hour = parseInt(hours);

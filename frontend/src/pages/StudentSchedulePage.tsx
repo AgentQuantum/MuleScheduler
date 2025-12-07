@@ -113,7 +113,7 @@ function StudentSchedulePage() {
     return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
   };
 
-  // @ts-ignore unused helper placeholder
+  // @ts-expect-error unused helper placeholder
   const _formatTime = (timeStr: string): string => {
     const [hours, minutes] = timeStr.split(':');
     const hour = parseInt(hours);
@@ -143,7 +143,7 @@ function StudentSchedulePage() {
     }
   };
 
-  // @ts-ignore unused helper placeholder
+  // @ts-expect-error unused helper placeholder
   const _getDayName = (dayOfWeek: number): string => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     return days[dayOfWeek];
