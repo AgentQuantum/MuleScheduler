@@ -114,3 +114,98 @@
     padding: 0.2rem 0.4rem;
   }
 }
+
+/* ============================================
+   DARK MODE - FullCalendar Overrides
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .fc {
+    --fc-border-color: #334155;
+    --fc-page-bg-color: #0f172a;
+    --fc-neutral-bg-color: #1e293b;
+    --fc-today-bg-color: rgba(56, 189, 248, 0.15);
+  }
+
+  :root:not([data-theme='light']) .fc .fc-timegrid-col {
+    border-left-color: #334155;
+  }
+
+  :root:not([data-theme='light']) .fc .fc-timegrid-event {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+
+  :root:not([data-theme='light']) .fc .fc-timegrid-event:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  :root:not([data-theme='light']) .fc .fc-timegrid-event.fc-event-dragging {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  :root:not([data-theme='light']) .fc .fc-timegrid-axis {
+    background-color: #1e293b;
+    color: #94a3b8;
+  }
+
+  :root:not([data-theme='light']) .fc .fc-timegrid-slot-label {
+    color: #94a3b8;
+  }
+
+  :root:not([data-theme='light']) .fc .fc-col-header-cell-cushion {
+    color: #e2e8f0;
+  }
+
+  :root:not([data-theme='light']) .fc .fc-daygrid-day-number {
+    color: #e2e8f0;
+  }
+
+  :root:not([data-theme='light']) .fc .fc-toolbar-title {
+    color: #f1f5f9;
+  }
+}
+
+/* Manual dark mode toggle */
+[data-theme='dark'] .fc {
+  --fc-border-color: #334155;
+  --fc-page-bg-color: #0f172a;
+  --fc-neutral-bg-color: #1e293b;
+  --fc-today-bg-color: rgba(56, 189, 248, 0.15);
+}
+
+[data-theme='dark'] .fc .fc-timegrid-col {
+  border-left-color: #334155;
+}
+
+[data-theme='dark'] .fc .fc-timegrid-event {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .fc .fc-timegrid-event:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='dark'] .fc .fc-timegrid-event.fc-event-dragging {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='dark'] .fc .fc-timegrid-axis {
+  background-color: #1e293b;
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .fc .fc-timegrid-slot-label {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .fc .fc-col-header-cell-cushion {
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .fc .fc-daygrid-day-number {
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .fc .fc-toolbar-title {
+  color: #f1f5f9;
+}

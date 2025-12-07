@@ -2918,6 +2918,639 @@ body {
 }
 
 /* =============================================================================
+   DARK MODE - System Preference & Manual Toggle Support
+   ============================================================================= */
+
+/* Dark mode variables - activated by system preference OR manual toggle */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    /* =============================================
+       BACKGROUND SYSTEM - Dark Canvas
+       ============================================= */
+    --ms-bg: #0f172a;
+    --ms-bg-soft: #1e293b;
+    --ms-card-bg: #1e293b;
+    --ms-surface: #334155;
+    --ms-surface-elevated: #475569;
+
+    /* =============================================
+       TEXT COLORS - Light on Dark
+       ============================================= */
+    --ms-text-primary: #f1f5f9;
+    --ms-text-secondary: #e2e8f0;
+    --ms-text-body: #cbd5e1;
+    --ms-text-muted: #94a3b8;
+    --ms-text-inverse: #0f172a;
+    --ms-text-link: #60a5fa;
+
+    /* =============================================
+       BRAND - Colby Blue (adjusted for dark)
+       ============================================= */
+    --ms-colby-blue: #3b82f6;
+    --ms-colby-blue-light: #60a5fa;
+    --ms-colby-gold: #fbbf24;
+
+    /* =============================================
+       PASTEL ACCENT PALETTE - Adjusted for Dark
+       ============================================= */
+    /* Mint / Lime Green */
+    --ms-mint: #34d399;
+    --ms-mint-light: #064e3b;
+    --ms-mint-dark: #6ee7b7;
+
+    /* Aqua / Cyan */
+    --ms-aqua: #22d3ee;
+    --ms-aqua-light: #083344;
+    --ms-aqua-dark: #67e8f9;
+
+    /* Sky Blue */
+    --ms-sky: #38bdf8;
+    --ms-sky-light: #0c4a6e;
+    --ms-sky-dark: #7dd3fc;
+
+    /* Coral / Peach */
+    --ms-coral: #fb7185;
+    --ms-coral-light: #4c0519;
+    --ms-coral-dark: #fda4af;
+
+    /* Lavender / Violet */
+    --ms-lavender: #a78bfa;
+    --ms-lavender-light: #2e1065;
+    --ms-lavender-dark: #c4b5fd;
+
+    /* Soft Yellow / Amber */
+    --ms-yellow: #fbbf24;
+    --ms-yellow-light: #451a03;
+    --ms-yellow-dark: #fde68a;
+
+    /* Pink / Rose */
+    --ms-pink: #f472b6;
+    --ms-pink-light: #500724;
+    --ms-pink-dark: #f9a8d4;
+
+    /* Indigo / Blue */
+    --ms-indigo: #818cf8;
+    --ms-indigo-light: #1e1b4b;
+    --ms-indigo-dark: #a5b4fc;
+
+    /* =============================================
+       SEMANTIC COLORS - Dark Mode
+       ============================================= */
+    --ms-success: #34d399;
+    --ms-success-light: #064e3b;
+    --ms-success-dark: #6ee7b7;
+
+    --ms-warning: #fbbf24;
+    --ms-warning-light: #451a03;
+    --ms-warning-dark: #fde68a;
+
+    --ms-danger: #f87171;
+    --ms-danger-light: #450a0a;
+    --ms-danger-dark: #fca5a5;
+
+    --ms-info: #60a5fa;
+    --ms-info-light: #1e3a5f;
+    --ms-info-dark: #93c5fd;
+
+    /* =============================================
+       LOCATION COLORS - Dark Mode Pastels
+       ============================================= */
+    --ms-loc-1: #34d399;
+    --ms-loc-1-bg: #064e3b;
+    --ms-loc-2: #fb7185;
+    --ms-loc-2-bg: #4c0519;
+    --ms-loc-3: #fbbf24;
+    --ms-loc-3-bg: #451a03;
+    --ms-loc-4: #a78bfa;
+    --ms-loc-4-bg: #2e1065;
+    --ms-loc-5: #38bdf8;
+    --ms-loc-5-bg: #0c4a6e;
+    --ms-loc-6: #f472b6;
+    --ms-loc-6-bg: #500724;
+
+    /* =============================================
+       BORDER COLORS - Dark Mode
+       ============================================= */
+    --ms-border: #334155;
+    --ms-border-light: #1e293b;
+    --ms-border-dark: rgba(255, 255, 255, 0.15);
+    --ms-border-focus: #60a5fa;
+
+    /* =============================================
+       SHADOWS - Dark Mode (more subtle)
+       ============================================= */
+    --ms-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --ms-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --ms-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --ms-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --ms-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+    --ms-shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.7);
+    --ms-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.4), 0 4px 24px rgba(0, 0, 0, 0.3);
+    --ms-shadow-colored: 0 4px 14px rgba(59, 130, 246, 0.3);
+
+    /* =============================================
+       STAT CARD COLORS - Dark Mode
+       ============================================= */
+    --ms-stat-sky: #0c4a6e;
+    --ms-stat-sky-accent: #38bdf8;
+    --ms-stat-sky-dark: #7dd3fc;
+
+    --ms-stat-mint: #064e3b;
+    --ms-stat-mint-accent: #34d399;
+    --ms-stat-mint-dark: #6ee7b7;
+
+    --ms-stat-yellow: #451a03;
+    --ms-stat-yellow-accent: #fbbf24;
+    --ms-stat-yellow-dark: #fde68a;
+
+    --ms-stat-lavender: #2e1065;
+    --ms-stat-lavender-accent: #a78bfa;
+    --ms-stat-lavender-dark: #c4b5fd;
+
+    --ms-stat-coral: #4c0519;
+    --ms-stat-coral-accent: #fb7185;
+    --ms-stat-coral-dark: #fda4af;
+
+    --ms-stat-indigo: #1e1b4b;
+    --ms-stat-indigo-accent: #818cf8;
+    --ms-stat-indigo-dark: #a5b4fc;
+  }
+}
+
+/* Manual dark mode toggle support */
+[data-theme='dark'] {
+  /* =============================================
+     BACKGROUND SYSTEM - Dark Canvas
+     ============================================= */
+  --ms-bg: #0f172a;
+  --ms-bg-soft: #1e293b;
+  --ms-card-bg: #1e293b;
+  --ms-surface: #334155;
+  --ms-surface-elevated: #475569;
+
+  /* =============================================
+     TEXT COLORS - Light on Dark
+     ============================================= */
+  --ms-text-primary: #f1f5f9;
+  --ms-text-secondary: #e2e8f0;
+  --ms-text-body: #cbd5e1;
+  --ms-text-muted: #94a3b8;
+  --ms-text-inverse: #0f172a;
+  --ms-text-link: #60a5fa;
+
+  /* =============================================
+     BRAND - Colby Blue (adjusted for dark)
+     ============================================= */
+  --ms-colby-blue: #3b82f6;
+  --ms-colby-blue-light: #60a5fa;
+  --ms-colby-gold: #fbbf24;
+
+  /* =============================================
+     PASTEL ACCENT PALETTE - Adjusted for Dark
+     ============================================= */
+  --ms-mint: #34d399;
+  --ms-mint-light: #064e3b;
+  --ms-mint-dark: #6ee7b7;
+
+  --ms-aqua: #22d3ee;
+  --ms-aqua-light: #083344;
+  --ms-aqua-dark: #67e8f9;
+
+  --ms-sky: #38bdf8;
+  --ms-sky-light: #0c4a6e;
+  --ms-sky-dark: #7dd3fc;
+
+  --ms-coral: #fb7185;
+  --ms-coral-light: #4c0519;
+  --ms-coral-dark: #fda4af;
+
+  --ms-lavender: #a78bfa;
+  --ms-lavender-light: #2e1065;
+  --ms-lavender-dark: #c4b5fd;
+
+  --ms-yellow: #fbbf24;
+  --ms-yellow-light: #451a03;
+  --ms-yellow-dark: #fde68a;
+
+  --ms-pink: #f472b6;
+  --ms-pink-light: #500724;
+  --ms-pink-dark: #f9a8d4;
+
+  --ms-indigo: #818cf8;
+  --ms-indigo-light: #1e1b4b;
+  --ms-indigo-dark: #a5b4fc;
+
+  /* =============================================
+     SEMANTIC COLORS - Dark Mode
+     ============================================= */
+  --ms-success: #34d399;
+  --ms-success-light: #064e3b;
+  --ms-success-dark: #6ee7b7;
+
+  --ms-warning: #fbbf24;
+  --ms-warning-light: #451a03;
+  --ms-warning-dark: #fde68a;
+
+  --ms-danger: #f87171;
+  --ms-danger-light: #450a0a;
+  --ms-danger-dark: #fca5a5;
+
+  --ms-info: #60a5fa;
+  --ms-info-light: #1e3a5f;
+  --ms-info-dark: #93c5fd;
+
+  /* =============================================
+     LOCATION COLORS - Dark Mode
+     ============================================= */
+  --ms-loc-1: #34d399;
+  --ms-loc-1-bg: #064e3b;
+  --ms-loc-2: #fb7185;
+  --ms-loc-2-bg: #4c0519;
+  --ms-loc-3: #fbbf24;
+  --ms-loc-3-bg: #451a03;
+  --ms-loc-4: #a78bfa;
+  --ms-loc-4-bg: #2e1065;
+  --ms-loc-5: #38bdf8;
+  --ms-loc-5-bg: #0c4a6e;
+  --ms-loc-6: #f472b6;
+  --ms-loc-6-bg: #500724;
+
+  /* =============================================
+     BORDER COLORS - Dark Mode
+     ============================================= */
+  --ms-border: #334155;
+  --ms-border-light: #1e293b;
+  --ms-border-dark: rgba(255, 255, 255, 0.15);
+  --ms-border-focus: #60a5fa;
+
+  /* =============================================
+     SHADOWS - Dark Mode
+     ============================================= */
+  --ms-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --ms-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --ms-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --ms-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --ms-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --ms-shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.7);
+  --ms-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.4), 0 4px 24px rgba(0, 0, 0, 0.3);
+  --ms-shadow-colored: 0 4px 14px rgba(59, 130, 246, 0.3);
+
+  /* =============================================
+     STAT CARD COLORS - Dark Mode
+     ============================================= */
+  --ms-stat-sky: #0c4a6e;
+  --ms-stat-sky-accent: #38bdf8;
+  --ms-stat-sky-dark: #7dd3fc;
+
+  --ms-stat-mint: #064e3b;
+  --ms-stat-mint-accent: #34d399;
+  --ms-stat-mint-dark: #6ee7b7;
+
+  --ms-stat-yellow: #451a03;
+  --ms-stat-yellow-accent: #fbbf24;
+  --ms-stat-yellow-dark: #fde68a;
+
+  --ms-stat-lavender: #2e1065;
+  --ms-stat-lavender-accent: #a78bfa;
+  --ms-stat-lavender-dark: #c4b5fd;
+
+  --ms-stat-coral: #4c0519;
+  --ms-stat-coral-accent: #fb7185;
+  --ms-stat-coral-dark: #fda4af;
+
+  --ms-stat-indigo: #1e1b4b;
+  --ms-stat-indigo-accent: #818cf8;
+  --ms-stat-indigo-dark: #a5b4fc;
+}
+
+/* =============================================================================
+   DARK MODE - Element-Specific Overrides
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) body,
+  :root:not([data-theme='light']) .ms-app-shell {
+    color-scheme: dark;
+  }
+
+  /* Sidebar brand name in dark mode */
+  :root:not([data-theme='light']) .ms-sidebar-brand-name {
+    color: var(--ms-sky);
+  }
+
+  /* Calendar schedule container */
+  :root:not([data-theme='light']) .calendar-schedule-container {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Calendar headers */
+  :root:not([data-theme='light']) .calendar-day-header.today {
+    background: linear-gradient(135deg, var(--ms-sky-light) 0%, #0c4a6e 100%);
+  }
+
+  /* Worker cards */
+  :root:not([data-theme='light']) .calendar-worker-card,
+  :root:not([data-theme='light']) .draggable-worker {
+    background: var(--ms-surface);
+  }
+
+  /* Shift cards */
+  :root:not([data-theme='light']) .shift-card {
+    background: var(--ms-surface);
+    color: var(--ms-text-primary);
+  }
+
+  /* Empty state backgrounds */
+  :root:not([data-theme='light']) .ms-empty-state {
+    background: linear-gradient(135deg, var(--ms-surface) 0%, var(--ms-bg) 100%);
+  }
+
+  /* Hero section */
+  :root:not([data-theme='light']) .ms-hero-section {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0c4a6e 100%);
+  }
+
+  /* Focus panel */
+  :root:not([data-theme='light']) .ms-focus-panel {
+    background: linear-gradient(180deg, #0c4a6e 0%, #1e3a5f 50%, #0c4a6e 100%);
+  }
+
+  /* Modal backdrop enhancement */
+  :root:not([data-theme='light']) .ms-drawer-backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  /* Toast enhancements */
+  :root:not([data-theme='light']) .ms-toast {
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.5),
+      0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Stat card gradients in dark mode */
+  :root:not([data-theme='light']) .ms-stat-card.sky {
+    background: linear-gradient(135deg, var(--ms-stat-sky) 0%, #0f172a 100%);
+  }
+  :root:not([data-theme='light']) .ms-stat-card.mint {
+    background: linear-gradient(135deg, var(--ms-stat-mint) 0%, #0f172a 100%);
+  }
+  :root:not([data-theme='light']) .ms-stat-card.yellow {
+    background: linear-gradient(135deg, var(--ms-stat-yellow) 0%, #0f172a 100%);
+  }
+  :root:not([data-theme='light']) .ms-stat-card.lavender {
+    background: linear-gradient(135deg, var(--ms-stat-lavender) 0%, #0f172a 100%);
+  }
+  :root:not([data-theme='light']) .ms-stat-card.coral {
+    background: linear-gradient(135deg, var(--ms-stat-coral) 0%, #0f172a 100%);
+  }
+  :root:not([data-theme='light']) .ms-stat-card.indigo {
+    background: linear-gradient(135deg, var(--ms-stat-indigo) 0%, #0f172a 100%);
+  }
+
+  /* Alert gradients */
+  :root:not([data-theme='light']) .alert-success {
+    background: linear-gradient(135deg, var(--ms-mint-light) 0%, #064e3b 100%);
+  }
+  :root:not([data-theme='light']) .alert-danger {
+    background: linear-gradient(135deg, var(--ms-coral-light) 0%, #450a0a 100%);
+  }
+  :root:not([data-theme='light']) .alert-warning {
+    background: linear-gradient(135deg, var(--ms-yellow-light) 0%, #451a03 100%);
+  }
+  :root:not([data-theme='light']) .alert-info {
+    background: linear-gradient(135deg, var(--ms-sky-light) 0%, #0c4a6e 100%);
+  }
+
+  /* Toast gradients */
+  :root:not([data-theme='light']) .ms-toast-success {
+    background: linear-gradient(135deg, #064e3b 0%, var(--ms-mint-light) 100%);
+  }
+  :root:not([data-theme='light']) .ms-toast-danger {
+    background: linear-gradient(135deg, #450a0a 0%, var(--ms-coral-light) 100%);
+  }
+  :root:not([data-theme='light']) .ms-toast-warning {
+    background: linear-gradient(135deg, #451a03 0%, var(--ms-yellow-light) 100%);
+  }
+  :root:not([data-theme='light']) .ms-toast-info {
+    background: linear-gradient(135deg, #0c4a6e 0%, var(--ms-sky-light) 100%);
+  }
+
+  /* Availability grid */
+  :root:not([data-theme='light']) .availability-grid-table .day-header {
+    background: linear-gradient(135deg, var(--ms-sky-light) 0%, var(--ms-card-bg) 100%);
+  }
+
+  /* Range slider track in dark mode */
+  :root:not([data-theme='light']) input[type='range'] {
+    background: var(--ms-surface);
+  }
+
+  /* Calendar cell hover */
+  :root:not([data-theme='light']) .calendar-cell:hover {
+    background: rgba(56, 189, 248, 0.1);
+  }
+
+  /* Scrollbar in dark mode */
+  :root:not([data-theme='light']) ::-webkit-scrollbar-track {
+    background: var(--ms-bg);
+  }
+  :root:not([data-theme='light']) ::-webkit-scrollbar-thumb {
+    background: var(--ms-surface);
+    border-color: var(--ms-bg);
+  }
+  :root:not([data-theme='light']) ::-webkit-scrollbar-thumb:hover {
+    background: var(--ms-surface-elevated);
+  }
+}
+
+/* Manual dark mode toggle - Element-Specific Overrides */
+[data-theme='dark'] body,
+[data-theme='dark'] .ms-app-shell {
+  color-scheme: dark;
+}
+
+[data-theme='dark'] .ms-sidebar-brand-name {
+  color: var(--ms-sky);
+}
+
+[data-theme='dark'] .calendar-schedule-container {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .calendar-day-header.today {
+  background: linear-gradient(135deg, var(--ms-sky-light) 0%, #0c4a6e 100%);
+}
+
+[data-theme='dark'] .calendar-worker-card,
+[data-theme='dark'] .draggable-worker {
+  background: var(--ms-surface);
+}
+
+[data-theme='dark'] .shift-card {
+  background: var(--ms-surface);
+  color: var(--ms-text-primary);
+}
+
+[data-theme='dark'] .ms-empty-state {
+  background: linear-gradient(135deg, var(--ms-surface) 0%, var(--ms-bg) 100%);
+}
+
+[data-theme='dark'] .ms-hero-section {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0c4a6e 100%);
+}
+
+[data-theme='dark'] .ms-focus-panel {
+  background: linear-gradient(180deg, #0c4a6e 0%, #1e3a5f 50%, #0c4a6e 100%);
+}
+
+[data-theme='dark'] .ms-drawer-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme='dark'] .ms-toast {
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .ms-stat-card.sky {
+  background: linear-gradient(135deg, var(--ms-stat-sky) 0%, #0f172a 100%);
+}
+[data-theme='dark'] .ms-stat-card.mint {
+  background: linear-gradient(135deg, var(--ms-stat-mint) 0%, #0f172a 100%);
+}
+[data-theme='dark'] .ms-stat-card.yellow {
+  background: linear-gradient(135deg, var(--ms-stat-yellow) 0%, #0f172a 100%);
+}
+[data-theme='dark'] .ms-stat-card.lavender {
+  background: linear-gradient(135deg, var(--ms-stat-lavender) 0%, #0f172a 100%);
+}
+[data-theme='dark'] .ms-stat-card.coral {
+  background: linear-gradient(135deg, var(--ms-stat-coral) 0%, #0f172a 100%);
+}
+[data-theme='dark'] .ms-stat-card.indigo {
+  background: linear-gradient(135deg, var(--ms-stat-indigo) 0%, #0f172a 100%);
+}
+
+[data-theme='dark'] .alert-success {
+  background: linear-gradient(135deg, var(--ms-mint-light) 0%, #064e3b 100%);
+}
+[data-theme='dark'] .alert-danger {
+  background: linear-gradient(135deg, var(--ms-coral-light) 0%, #450a0a 100%);
+}
+[data-theme='dark'] .alert-warning {
+  background: linear-gradient(135deg, var(--ms-yellow-light) 0%, #451a03 100%);
+}
+[data-theme='dark'] .alert-info {
+  background: linear-gradient(135deg, var(--ms-sky-light) 0%, #0c4a6e 100%);
+}
+
+[data-theme='dark'] .ms-toast-success {
+  background: linear-gradient(135deg, #064e3b 0%, var(--ms-mint-light) 100%);
+}
+[data-theme='dark'] .ms-toast-danger {
+  background: linear-gradient(135deg, #450a0a 0%, var(--ms-coral-light) 100%);
+}
+[data-theme='dark'] .ms-toast-warning {
+  background: linear-gradient(135deg, #451a03 0%, var(--ms-yellow-light) 100%);
+}
+[data-theme='dark'] .ms-toast-info {
+  background: linear-gradient(135deg, #0c4a6e 0%, var(--ms-sky-light) 100%);
+}
+
+[data-theme='dark'] .availability-grid-table .day-header {
+  background: linear-gradient(135deg, var(--ms-sky-light) 0%, var(--ms-card-bg) 100%);
+}
+
+[data-theme='dark'] input[type='range'] {
+  background: var(--ms-surface);
+}
+
+[data-theme='dark'] .calendar-cell:hover {
+  background: rgba(56, 189, 248, 0.1);
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: var(--ms-bg);
+}
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: var(--ms-surface);
+  border-color: var(--ms-bg);
+}
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: var(--ms-surface-elevated);
+}
+
+/* Sidebar nav description visibility fix - white text on blue background */
+[data-theme='dark'] .ms-sidebar-nav-item-expanded {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='dark'] .ms-sidebar-nav-item-expanded:hover {
+  background: rgba(59, 130, 246, 0.25);
+}
+
+[data-theme='dark'] .ms-sidebar-nav-item-expanded.active {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+[data-theme='dark'] .ms-sidebar-nav-desc {
+  color: #e2e8f0;
+}
+
+[data-theme='dark'] .ms-sidebar-nav-label {
+  color: #ffffff;
+}
+
+[data-theme='dark'] .ms-sidebar-section-label {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .ms-sidebar-nav-icon {
+  color: #ffffff;
+}
+
+[data-theme='dark'] .ms-sidebar-nav-item-expanded.active .ms-sidebar-nav-icon {
+  background: rgba(59, 130, 246, 0.4);
+  color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ms-sidebar-nav-item-expanded {
+    background: rgba(59, 130, 246, 0.15);
+  }
+
+  :root:not([data-theme='light']) .ms-sidebar-nav-item-expanded:hover {
+    background: rgba(59, 130, 246, 0.25);
+  }
+
+  :root:not([data-theme='light']) .ms-sidebar-nav-item-expanded.active {
+    background: rgba(59, 130, 246, 0.3);
+  }
+
+  :root:not([data-theme='light']) .ms-sidebar-nav-desc {
+    color: #e2e8f0;
+  }
+
+  :root:not([data-theme='light']) .ms-sidebar-nav-label {
+    color: #ffffff;
+  }
+
+  :root:not([data-theme='light']) .ms-sidebar-section-label {
+    color: #94a3b8;
+  }
+
+  :root:not([data-theme='light']) .ms-sidebar-nav-icon {
+    color: #ffffff;
+  }
+
+  :root:not([data-theme='light']) .ms-sidebar-nav-item-expanded.active .ms-sidebar-nav-icon {
+    background: rgba(59, 130, 246, 0.4);
+    color: #ffffff;
+  }
+}
+
+/* =============================================================================
    NATIVE TOOLTIPS - Uses browser's native title attribute for clean hover
    ============================================================================= */
 
