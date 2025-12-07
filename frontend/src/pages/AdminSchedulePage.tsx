@@ -28,13 +28,7 @@ function AdminSchedulePage() {
   const [isRunningScheduler, setIsRunningScheduler] = useState(false);
   const [statusFilter, setStatusFilter] = useState<'all' | 'assigned' | 'unassigned'>('all');
 
-  const {
-    data,
-    loading,
-    error,
-    refreshData,
-    timeSlotsById,
-  } = useScheduleData({
+  const { data, loading, error, refreshData, timeSlotsById } = useScheduleData({
     weekStart,
     locationFilter,
     userFilter,

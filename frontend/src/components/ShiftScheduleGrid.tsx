@@ -238,7 +238,6 @@ const ShiftScheduleGrid: React.FC<ShiftScheduleGridProps> = ({
     new Set(timeSlots.map((ts) => `${ts.start_time}-${ts.end_time}`))
   ).sort();
 
-
   const formatTimeShort = (time: string): string => {
     const [hours, minutes] = time.split(':');
     const h = parseInt(hours);
