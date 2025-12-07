@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, ReactNode, useState } from 'react';
+import { createContext, useContext, useEffect, ReactNode, useState } from 'react';
 import api from '../services/api';
 import { User } from '../types/scheduler';
 

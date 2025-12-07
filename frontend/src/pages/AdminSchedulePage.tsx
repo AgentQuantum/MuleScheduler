@@ -21,23 +21,14 @@ function AdminSchedulePage() {
   });
 
   const [locationFilter, setLocationFilter] = useState<number | null>(null);
-  const [userFilter, setUserFilter] = useState<number | null>(null);
+  const [userFilter, _setUserFilter] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isRunningScheduler, setIsRunningScheduler] = useState(false);
   const [statusFilter, setStatusFilter] = useState<'all' | 'assigned' | 'unassigned'>('all');
 
-  const {
-    data,
-    loading,
-    error,
-    refreshData,
-    usersById,
-    allUsersById,
-    locationsById,
-    timeSlotsById,
-  } = useScheduleData({
+  const { data, loading, error, refreshData, timeSlotsById } = useScheduleData({
     weekStart,
     locationFilter,
     userFilter,
@@ -76,7 +67,8 @@ function AdminSchedulePage() {
     return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
   };
 
-  const handleAssignmentMove = async (
+  // @ts-expect-error unused handler placeholder
+  const _handleAssignmentMove = async (
     assignmentId: number,
     target: { userId: number; locationId: number; timeSlotId: number }
   ) => {
@@ -211,14 +203,9 @@ function AdminSchedulePage() {
   const totalShifts = data.assignments.length;
   const assignedShifts = data.assignments.filter((a) => a.user_id).length;
   const unassignedCount = totalShifts - assignedShifts;
-  const coveragePercent = totalShifts > 0 ? Math.round((assignedShifts / totalShifts) * 100) : 0;
-
   // Calculate unique workers (distinct user_ids from assignments)
   const uniqueWorkers = new Set(data.assignments.filter((a) => a.user_id).map((a) => a.user_id))
     .size;
-
-  // Get unassigned shifts based on requirements vs current assignments
-  const unassignedShifts: any[] = []; // TODO: Compute from shift requirements
 
   if (loading) {
     return (

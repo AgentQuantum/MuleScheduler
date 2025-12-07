@@ -43,7 +43,7 @@ function WeeklyScheduleCalendar({
 }: WeeklyScheduleCalendarProps) {
   const calendarRef = useRef<FullCalendar>(null);
   const [events, setEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isAdmin = role === 'admin';
@@ -169,7 +169,7 @@ function WeeklyScheduleCalendar({
       }
 
       // Call move endpoint
-      const response = await api.put(`/assignments/${assignment.id}/move`, {
+      await api.put(`/assignments/${assignment.id}/move`, {
         new_start: newStart.toISOString(),
         new_end: newEnd.toISOString(),
         new_time_slot_id: matchingTimeSlot.id,

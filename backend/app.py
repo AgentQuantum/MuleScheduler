@@ -11,7 +11,12 @@ load_dotenv()
 from database import db
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///scheduler.db")
+# Database configuration - use PostgreSQL on Heroku, SQLite locally
+database_url = os.environ.get("DATABASE_URL", "sqlite:///scheduler.db")
+# Heroku provides postgres:// but SQLAlchemy needs postgresql://
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
 app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(__file__), "uploads", "profile_pictures")
@@ -20,8 +25,11 @@ app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5MB max file size
 # Create uploads directory if it doesn't exist
 Path(app.config["UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
 
+# CORS configuration - allow frontend origin from env or default
+frontend_origin = os.environ.get("FRONTEND_ORIGIN", "http://localhost:5173")
+allowed_origins = [frontend_origin, "http://localhost:5173", "http://localhost:3000"]
 db.init_app(app)
-CORS(app, origins=["http://localhost:5173", "http://localhost:3000"])
+CORS(app, origins=allowed_origins)
 
 # Import models (must be after db is created)
 from models import (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Row, Col } from 'react-bootstrap';
 import api from '../services/api';
 import { Location, TimeSlot, UserAvailability } from '../types/scheduler';
