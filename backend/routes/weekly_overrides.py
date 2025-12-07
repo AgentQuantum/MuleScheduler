@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify, request
 from database import db
 from models import DaySchedule, WeeklyScheduleOverride
 from routes.auth import get_current_user
+from services.slot_generator import generate_slots_for_day
 
 bp = Blueprint("weekly_overrides", __name__, url_prefix="/api/weekly-overrides")
 
@@ -72,9 +73,10 @@ def create_weekly_override():
         existing.is_active = data.get("is_active", True)
         db.session.commit()
 
-        # NOTE: We no longer regenerate TimeSlot records here.
-        # Time slots are global (same grid every week). Weekly overrides now only
-        # control which days are considered "configured" for a specific week.
+        # Generate time slots for this day (only adds missing ones)
+        if existing.is_active:
+            generate_slots_for_day(existing)
+
         result = existing.to_dict()
         result["day_name"] = existing.get_day_name()
         return jsonify(result)
@@ -90,7 +92,10 @@ def create_weekly_override():
     db.session.add(override)
     db.session.commit()
 
-    # See note above – we keep global TimeSlot rows untouched.
+    # Generate time slots for this day (only adds missing ones)
+    if override.is_active:
+        generate_slots_for_day(override)
+
     result = override.to_dict()
     result["day_name"] = override.get_day_name()
     return jsonify(result), 201
@@ -126,6 +131,10 @@ def update_weekly_override(override_id):
         override.is_active = data["is_active"]
 
     db.session.commit()
+
+    # Regenerate time slots if schedule changed
+    if override.is_active:
+        generate_slots_for_day(override)
 
     result = override.to_dict()
     result["day_name"] = override.get_day_name()
@@ -190,6 +199,11 @@ def create_override_from_standard():
             created_overrides.append(override)
 
     db.session.commit()
+
+    # Generate time slots for all created/updated overrides
+    for override in created_overrides:
+        if override.is_active:
+            generate_slots_for_day(override)
 
     result = []
     for override in created_overrides:

@@ -121,10 +121,19 @@ def run_scheduler():
     if not data or not data.get("week_start_date"):
         return jsonify({"error": "week_start_date is required"}), 400
 
-    week_start_date = datetime.fromisoformat(data.get("week_start_date")).date()
+    try:
+        week_start_date = datetime.fromisoformat(data.get("week_start_date")).date()
+    except (ValueError, TypeError) as e:
+        return jsonify({"error": f"Invalid week_start_date format: {str(e)}"}), 400
 
-    result = run_auto_scheduler(week_start_date)
-    return jsonify(result)
+    try:
+        result = run_auto_scheduler(week_start_date)
+        return jsonify(result)
+    except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+        return jsonify({"error": f"Scheduler failed: {str(e)}"}), 500
 
 
 @bp.route("/<int:assignment_id>", methods=["PUT"])
