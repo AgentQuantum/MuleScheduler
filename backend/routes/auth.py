@@ -54,7 +54,9 @@ def verify_google_token(token: str):
     """Verify a Google ID token and return claims."""
     try:
         return id_token.verify_oauth2_token(token, google_requests.Request(), GOOGLE_CLIENT_ID)
-    except Exception:  # pragma: no cover - external verification failures are not deterministic in tests
+    except (
+        Exception
+    ):  # pragma: no cover - external verification failures are not deterministic in tests
         return None
 
 
@@ -87,7 +89,9 @@ def ensure_user_from_claims(claims):
 @bp.route("/google/login", methods=["GET"])
 def google_login():
     """Begin Google OAuth flow."""
-    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:  # pragma: no cover - configuration error path
+    if (
+        not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET
+    ):  # pragma: no cover - configuration error path
         return (
             jsonify(
                 {
