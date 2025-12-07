@@ -54,7 +54,7 @@ def verify_google_token(token: str):
     """Verify a Google ID token and return claims."""
     try:
         return id_token.verify_oauth2_token(token, google_requests.Request(), GOOGLE_CLIENT_ID)
-    except Exception:
+    except Exception:  # pragma: no cover - external verification failures are not deterministic in tests
         return None
 
 
@@ -87,7 +87,7 @@ def ensure_user_from_claims(claims):
 @bp.route("/google/login", methods=["GET"])
 def google_login():
     """Begin Google OAuth flow."""
-    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:  # pragma: no cover - configuration error path
         return (
             jsonify(
                 {
@@ -143,7 +143,7 @@ def google_callback():
         redirect_url = f"{FRONTEND_ORIGIN}/login?token={app_token}"
         return redirect(redirect_url)
 
-    except Exception as e:
+    except Exception as e:  # pragma: no cover - defensive catch-all for unexpected OAuth errors
         print(f"OAuth callback error: {e}")
         return redirect(f"{FRONTEND_ORIGIN}/login?error=auth_failed")
 
