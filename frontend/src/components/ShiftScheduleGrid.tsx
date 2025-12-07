@@ -77,13 +77,7 @@ const DraggableWorker: React.FC<{
       <UserAvatar
         name={user.name}
         userId={user.id}
-        profilePhotoUrl={
-          user.profile_picture_url
-            ? user.profile_picture_url.startsWith('http')
-              ? user.profile_picture_url
-              : `http://localhost:5000${user.profile_picture_url}`
-            : undefined
-        }
+        profilePhotoUrl={user.profile_picture_url || undefined}
         size="sm"
         showBorder={false}
       />
@@ -119,13 +113,7 @@ const ShiftBlock: React.FC<{
         <UserAvatar
           name={user?.name || '?'}
           userId={assignment.user_id}
-          profilePhotoUrl={
-            user?.profile_picture_url
-              ? user.profile_picture_url.startsWith('http')
-                ? user.profile_picture_url
-                : `http://localhost:5000${user.profile_picture_url}`
-              : undefined
-          }
+          profilePhotoUrl={user?.profile_picture_url || undefined}
           size="xs"
           showBorder={false}
         />
