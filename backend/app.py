@@ -68,6 +68,17 @@ app.register_blueprint(availability.bp)
 app.register_blueprint(assignments.bp)
 app.register_blueprint(weekly_overrides.bp)
 
+# Serve frontend in production
+frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
+if os.path.exists(frontend_dist):
+
+    @app.route("/", defaults={"path": ""})
+    @app.route("/<path:path>")
+    def serve_frontend(path):
+        if path != "" and os.path.exists(os.path.join(frontend_dist, path)):
+            return send_from_directory(frontend_dist, path)
+        return send_from_directory(frontend_dist, "index.html")
+
 
 @app.route("/uploads/profile_pictures/<filename>")
 def serve_profile_picture(filename):

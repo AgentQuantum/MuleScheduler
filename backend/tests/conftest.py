@@ -63,6 +63,15 @@ def test_user(test_app):
 def test_admin(test_app):
     """Create a test admin user and return admin data dict."""
     with test_app.app_context():
+        # Check if admin already exists (e.g., from demo seeding)
+        existing = User.query.filter_by(email="admin@colby.edu").first()
+        if existing:
+            return {
+                "id": existing.id,
+                "name": existing.name,
+                "email": existing.email,
+                "role": existing.role,
+            }
         admin = User(name="Test Admin", email="admin@colby.edu", role="admin")
         db.session.add(admin)
         db.session.commit()
