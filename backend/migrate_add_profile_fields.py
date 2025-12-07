@@ -46,3 +46,5 @@ with app.app_context():
         print(f"Migration failed: {e}")
     finally:
         conn.close()
+
+

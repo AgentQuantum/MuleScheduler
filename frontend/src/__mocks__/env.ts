@@ -12,3 +12,4 @@ export const env = {
 export const isDemoMode = (): boolean => {
   return true;
 };
+
