@@ -22,5 +22,6 @@ export const env = {
 };
 
 export const isDemoMode = (): boolean => {
-  return env.VITE_DEMO_MODE || env.DEV;
+  // Demo mode enabled in production and development
+  return true;
 };
