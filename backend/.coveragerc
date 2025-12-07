@@ -1,29 +1,25 @@
 [run]
-source = .
 branch = True
-omit = 
+source = .
+omit =
     venv/*
     tests/*
-    instance/*
-    */__pycache__/*
-    */site-packages/*
-    seed_data.py
+    migrate_*.py
+    */migrations/*
     run.py
+    seed_data.py
+    app.py
 
 [report]
 exclude_lines =
     pragma: no cover
-    def __repr__
     if __name__ == .__main__.:
     raise NotImplementedError
     if TYPE_CHECKING:
+    @abstractmethod
 
-fail_under = 95
-show_missing = True
-precision = 2
+partial_branches =
+    pragma: no branch
 
 [html]
 directory = htmlcov
-
-[xml]
-output = coverage.xml

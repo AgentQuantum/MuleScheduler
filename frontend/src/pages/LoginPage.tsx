@@ -1,29 +1,28 @@
 import { useState } from 'react';
-import { Container, Card, Form, Button, Alert, Row, Col } from 'react-bootstrap';
+import { Container, Card, Button, Row, Col, Collapse } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { isDemoMode } from '../utils/env';
 import '../styles/scheduler.css';
 
+// Demo mode is enabled via environment variable
+const DEMO_MODE = isDemoMode();
+
 function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [role, setRole] = useState<'user' | 'admin'>('user');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { login, demoLogin } = useAuth();
+  const [demoLoading, setDemoLoading] = useState<string | null>(null);
+  const [showDemoOptions, setShowDemoOptions] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  const handleLogin = () => {
+    login();
+  };
 
+  const handleDemoLogin = async (email: string) => {
+    setDemoLoading(email);
     try {
-      await login(email, role);
-      navigate(role === 'admin' ? '/admin/schedule' : '/student/schedule');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed');
-    } finally {
-      setLoading(false);
+      await demoLogin(email);
+    } catch (error) {
+      console.error('Demo login failed:', error);
+      setDemoLoading(null);
     }
   };
 
@@ -209,48 +208,17 @@ function LoginPage() {
                         marginBottom: '8px',
                       }}
                     >
-                      Welcome Back 👋
+                      Login
                     </h2>
                     <p style={{ color: 'var(--ms-text-muted)', fontSize: '0.95rem' }}>
-                      Sign in to your account
+                      Use your Colby College credentials
                     </p>
                   </div>
 
-                  {error && (
-                    <Alert variant="danger" className="mb-4">
-                      {error}
-                    </Alert>
-                  )}
-
-                  <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-4">
-                      <Form.Label className="ms-label">Email</Form.Label>
-                      <Form.Control
-                        type="email"
-                        placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        style={{ padding: '14px 16px', fontSize: '1rem' }}
-                      />
-                    </Form.Group>
-
-                    <Form.Group className="mb-4">
-                      <Form.Label className="ms-label">Role</Form.Label>
-                      <Form.Select
-                        value={role}
-                        onChange={(e) => setRole(e.target.value as 'user' | 'admin')}
-                        style={{ padding: '14px 16px', fontSize: '1rem' }}
-                      >
-                        <option value="user">Student Worker</option>
-                        <option value="admin">Administrator</option>
-                      </Form.Select>
-                    </Form.Group>
-
+                  <div className="text-center">
                     <Button
                       className="ms-btn ms-btn-primary w-100"
-                      type="submit"
-                      disabled={loading}
+                      onClick={handleLogin}
                       style={{
                         padding: '14px',
                         fontSize: '1rem',
@@ -258,32 +226,122 @@ function LoginPage() {
                         borderColor: '#002169',
                       }}
                     >
-                      {loading ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2" />
-                          Signing in...
-                        </>
-                      ) : (
-                        'Sign In'
-                      )}
+                      Login with Colby
                     </Button>
 
-                    <div className="text-center mt-4">
-                      <span style={{ color: 'var(--ms-text-muted)', fontSize: '0.9rem' }}>
-                        Don't have an account?{' '}
-                        <Link
-                          to="/signup"
+                    <p
+                      className="mt-4"
+                      style={{ color: 'var(--ms-text-muted)', fontSize: '0.85rem' }}
+                    >
+                      You will be redirected to Colby's secure login page
+                    </p>
+                  </div>
+
+                  {/* Demo Mode Toggle */}
+                  {DEMO_MODE && (
+                    <div style={{ marginTop: '24px' }}>
+                      <button
+                        onClick={() => setShowDemoOptions(!showDemoOptions)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: 'var(--ms-text-muted)',
+                          fontSize: '0.75rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          margin: '0 auto',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          transition: 'background 0.2s',
+                        }}
+                        onMouseOver={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.05)')}
+                        onMouseOut={(e) => (e.currentTarget.style.background = 'none')}
+                      >
+                        <span
                           style={{
-                            color: 'var(--ms-colby-blue)',
-                            textDecoration: 'none',
+                            background: '#FEF3C7',
+                            color: '#92400E',
+                            padding: '1px 6px',
+                            borderRadius: '3px',
+                            fontSize: '0.65rem',
                             fontWeight: 600,
                           }}
                         >
-                          Sign up here
-                        </Link>
-                      </span>
+                          DEMO
+                        </span>
+                        Demo Mode {showDemoOptions ? '▲' : '▼'}
+                      </button>
+
+                      <Collapse in={showDemoOptions}>
+                        <div
+                          style={{
+                            marginTop: '16px',
+                            padding: '16px',
+                            background: '#FAFAFA',
+                            borderRadius: '12px',
+                            border: '1px solid #E5E7EB',
+                          }}
+                        >
+                          {/* Admin Demo */}
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            className="w-100 mb-3"
+                            onClick={() => handleDemoLogin('admin@colby.edu')}
+                            disabled={demoLoading !== null}
+                            style={{
+                              borderRadius: '8px',
+                              padding: '10px',
+                              fontWeight: 500,
+                            }}
+                          >
+                            {demoLoading === 'admin@colby.edu' ? 'Logging in...' : 'Demo as Admin'}
+                          </Button>
+
+                          {/* Student Demo */}
+                          <div>
+                            <p
+                              style={{
+                                fontSize: '0.75rem',
+                                color: 'var(--ms-text-muted)',
+                                marginBottom: '8px',
+                                textAlign: 'center',
+                              }}
+                            >
+                              Demo as Student
+                            </p>
+                            <div className="d-flex gap-2 justify-content-center">
+                              {[1, 2, 3].map((num) => (
+                                <Button
+                                  key={num}
+                                  variant="outline-secondary"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleDemoLogin(
+                                      `student.${['one', 'two', 'three'][num - 1]}@colby.edu`
+                                    )
+                                  }
+                                  disabled={demoLoading !== null}
+                                  style={{
+                                    borderRadius: '8px',
+                                    padding: '8px 16px',
+                                    minWidth: '50px',
+                                  }}
+                                >
+                                  {demoLoading ===
+                                  `student.${['one', 'two', 'three'][num - 1]}@colby.edu`
+                                    ? '...'
+                                    : num}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </Collapse>
                     </div>
-                  </Form>
+                  )}
                 </Card.Body>
               </Card>
 
@@ -291,7 +349,7 @@ function LoginPage() {
                 className="text-center mt-4"
                 style={{ color: 'var(--ms-text-muted)', fontSize: '0.8rem' }}
               >
-                Designed for Colby College 🐴
+                Designed for Colby College
               </p>
             </div>
           </Col>

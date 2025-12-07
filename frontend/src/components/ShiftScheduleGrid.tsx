@@ -42,6 +42,7 @@ interface ShiftScheduleGridProps {
   onRemoveAssignment: (assignmentId: number) => Promise<void>;
   onAssignmentClick: (assignment: Assignment) => void;
   onAlert?: (type: 'warning' | 'info' | 'success', message: string) => void;
+  allUsers?: User[]; // All users (including admin) for assignment lookups
 }
 
 // Draggable worker in sidebar
@@ -73,7 +74,19 @@ const DraggableWorker: React.FC<{
       {...attributes}
     >
       <div className="worker-color-bar" style={{ background: color.border }} />
-      <UserAvatar name={user.name} userId={user.id} size="sm" showBorder={false} />
+      <UserAvatar
+        name={user.name}
+        userId={user.id}
+        profilePhotoUrl={
+          user.profile_picture_url
+            ? user.profile_picture_url.startsWith('http')
+              ? user.profile_picture_url
+              : `http://localhost:5000${user.profile_picture_url}`
+            : undefined
+        }
+        size="sm"
+        showBorder={false}
+      />
       <div className="worker-details">
         <div className="worker-name" style={{ color: color.text }}>
           {user.name}
@@ -106,6 +119,13 @@ const ShiftBlock: React.FC<{
         <UserAvatar
           name={user?.name || '?'}
           userId={assignment.user_id}
+          profilePhotoUrl={
+            user?.profile_picture_url
+              ? user.profile_picture_url.startsWith('http')
+                ? user.profile_picture_url
+                : `http://localhost:5000${user.profile_picture_url}`
+              : undefined
+          }
           size="xs"
           showBorder={false}
         />
@@ -183,6 +203,7 @@ const ShiftScheduleGrid: React.FC<ShiftScheduleGridProps> = ({
   onRemoveAssignment,
   onAssignmentClick,
   onAlert,
+  allUsers,
 }) => {
   const [activeWorker, setActiveWorker] = useState<User | null>(null);
   const [dragOverCell, setDragOverCell] = useState<string | null>(null);
@@ -196,6 +217,10 @@ const ShiftScheduleGrid: React.FC<ShiftScheduleGridProps> = ({
 
   // Get configured days (days that have time slots)
   const configuredDays = new Set(timeSlots.map((ts) => ts.day_of_week));
+
+  // Use allUsers for assignment lookups (includes all roles), fallback to users
+  const usersForLookup = allUsers || users;
+  const usersById = new Map(usersForLookup.map((u) => [u.id, u]));
 
   const getDayDate = (dayOfWeek: number): Date => {
     const weekStartDate = new Date(weekStart);
@@ -230,7 +255,6 @@ const ShiftScheduleGrid: React.FC<ShiftScheduleGridProps> = ({
     return `${hour12}:${minutes}${ampm}`;
   };
 
-  const usersById = new Map(users.map((u) => [u.id, u]));
   const location = locations[0];
 
   const getAssignmentsForCell = (timeSlotId: number, locationId: number) => {

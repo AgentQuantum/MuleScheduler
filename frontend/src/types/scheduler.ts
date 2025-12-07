@@ -6,6 +6,9 @@ export interface User {
   email: string;
   role: 'admin' | 'user';
   created_at?: string;
+  profile_picture_url?: string;
+  bio?: string;
+  class_year?: number;
 }
 
 export interface Location {
@@ -69,6 +72,7 @@ export interface ScheduleData {
   timeSlots: TimeSlot[];
   weekStart: string;
   settings?: GlobalSettings;
+  allUsers?: User[]; // All users (including admin) for assignment lookups
 }
 
 export interface DragItem {

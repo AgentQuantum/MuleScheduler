@@ -28,12 +28,20 @@ function AdminSchedulePage() {
   const [isRunningScheduler, setIsRunningScheduler] = useState(false);
   const [statusFilter, setStatusFilter] = useState<'all' | 'assigned' | 'unassigned'>('all');
 
-  const { data, loading, error, refreshData, usersById, locationsById, timeSlotsById } =
-    useScheduleData({
-      weekStart,
-      locationFilter,
-      userFilter,
-    });
+  const {
+    data,
+    loading,
+    error,
+    refreshData,
+    usersById,
+    allUsersById,
+    locationsById,
+    timeSlotsById,
+  } = useScheduleData({
+    weekStart,
+    locationFilter,
+    userFilter,
+  });
 
   // Filter users by search query
   const filteredUsers = data.users.filter((u) => {
@@ -613,6 +621,7 @@ function AdminSchedulePage() {
               onRemoveAssignment={handleRemoveAssignment}
               onAssignmentClick={handleAssignmentClick}
               onAlert={(type, message) => showToast(type, message)}
+              allUsers={data.allUsers}
             />
           )}
         </Col>

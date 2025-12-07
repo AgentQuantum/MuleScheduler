@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './components/Toast';
 import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
 import StudentAvailabilityPage from './pages/StudentAvailabilityPage';
 import StudentSchedulePage from './pages/StudentSchedulePage';
 import AdminSettingsPage from './pages/AdminSettingsPage';
@@ -75,16 +74,6 @@ function AppRoutes() {
         element={
           !user ? (
             <LoginPage />
-          ) : (
-            <Navigate to={user.role === 'admin' ? '/admin/schedule' : '/me/availability'} replace />
-          )
-        }
-      />
-      <Route
-        path="/signup"
-        element={
-          !user ? (
-            <SignupPage />
           ) : (
             <Navigate to={user.role === 'admin' ? '/admin/schedule' : '/me/availability'} replace />
           )

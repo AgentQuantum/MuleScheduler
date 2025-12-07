@@ -101,9 +101,9 @@ def test_time_slot(test_app):
 
 @pytest.fixture
 def auth_token(client, test_user):
-    """Get an auth token for a test user."""
+    """Get a test auth token for a test user via /api/auth/test-token."""
     response = client.post(
-        "/api/auth/login", json={"email": test_user["email"], "role": test_user["role"]}
+        "/api/auth/test-token", json={"email": test_user["email"], "name": test_user["name"]}
     )
     data = response.get_json()
     return data["token"]
@@ -111,9 +111,9 @@ def auth_token(client, test_user):
 
 @pytest.fixture
 def admin_token(client, test_admin):
-    """Get an auth token for a test admin."""
+    """Get a test auth token for a test admin via /api/auth/test-token."""
     response = client.post(
-        "/api/auth/login", json={"email": test_admin["email"], "role": test_admin["role"]}
+        "/api/auth/test-token", json={"email": test_admin["email"], "name": test_admin["name"]}
     )
     data = response.get_json()
     return data["token"]

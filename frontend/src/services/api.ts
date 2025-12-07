@@ -7,10 +7,5 @@ const api = axios.create({
   },
 });
 
-// Add token from localStorage if available
-const token = localStorage.getItem('token');
-if (token) {
-  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}
-
+// Token will be set by AuthContext when Okta authentication is complete
 export default api;

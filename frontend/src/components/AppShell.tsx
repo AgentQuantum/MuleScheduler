@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
 import UserAvatar from './UserAvatar';
+import ProfileEditModal from './ProfileEditModal';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -200,9 +201,10 @@ const MSLogo = () => (
 );
 
 const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, setUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
   const isAdmin = user?.role === 'admin';
@@ -210,6 +212,10 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleProfileUpdate = (updatedUser: any) => {
+    setUser(updatedUser);
   };
 
   const adminNavItems = [
@@ -372,7 +378,19 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
                   <div className="ms-topbar-user-name">{user?.name || 'User'}</div>
                   <div className="ms-topbar-user-email">{user?.email}</div>
                 </div>
-                <UserAvatar name={user?.name || 'User'} email={user?.email} size="md" />
+                <UserAvatar
+                  name={user?.name || 'User'}
+                  email={user?.email}
+                  userId={user?.id}
+                  profilePhotoUrl={
+                    user?.profile_picture_url
+                      ? user.profile_picture_url.startsWith('http')
+                        ? user.profile_picture_url
+                        : `http://localhost:5000${user.profile_picture_url}`
+                      : undefined
+                  }
+                  size="md"
+                />
               </Dropdown.Toggle>
 
               <Dropdown.Menu
@@ -392,15 +410,46 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
                 >
                   <div style={{ fontWeight: 600, color: '#000' }}>{user?.name}</div>
                   <div style={{ fontSize: '0.8rem', color: '#6B7280' }}>{user?.email}</div>
+                  {user?.class_year && (
+                    <div style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '4px' }}>
+                      Class of {user.class_year}
+                    </div>
+                  )}
+                  {user?.bio && (
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#6B7280',
+                        marginTop: '6px',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      {user.bio.length > 60 ? `${user.bio.substring(0, 60)}...` : user.bio}
+                    </div>
+                  )}
                   <div style={{ marginTop: '8px' }}>
                     <span
                       className={`ms-chip ms-chip-${isAdmin ? 'open' : 'assigned'}`}
                       style={{ fontSize: '0.7rem', padding: '3px 8px' }}
                     >
-                      {isAdmin ? '👑 Administrator' : '👤 Student'}
+                      {isAdmin ? 'Administrator' : 'Student'}
                     </span>
                   </div>
                 </div>
+                <Dropdown.Item
+                  onClick={() => setShowProfileModal(true)}
+                  style={{
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 16px',
+                    marginBottom: '4px',
+                  }}
+                >
+                  <Icons.Settings />
+                  Edit Profile
+                </Dropdown.Item>
                 <Dropdown.Item
                   onClick={handleLogout}
                   style={{
@@ -423,6 +472,14 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
         {/* Page Content */}
         <main className="ms-main-content">{children}</main>
       </div>
+
+      {/* Profile Edit Modal */}
+      <ProfileEditModal
+        show={showProfileModal}
+        onHide={() => setShowProfileModal(false)}
+        user={user}
+        onUpdate={handleProfileUpdate}
+      />
     </div>
   );
 };
