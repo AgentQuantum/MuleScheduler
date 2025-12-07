@@ -4,6 +4,6 @@
     "npm": "9.x"
   },
   "scripts": {
-    "heroku-postbuild": "cd frontend && npm ci --include=dev && VITE_DEMO_MODE=true npm run build"
+    "heroku-postbuild": "cd frontend && npm ci --include=dev && npm run build"
   }
 }
