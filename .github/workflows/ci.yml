@@ -64,6 +64,7 @@ jobs:
         run: |
           python -m pytest -v tests \
             --cov=. \
+            --cov-config=.coveragerc \
             --cov-branch \
             --cov-report=xml \
             --cov-report=term-missing \
@@ -95,7 +96,7 @@ jobs:
           echo "| **Branch Coverage** | **$BRANCH_COV%** | $BRANCH_STATUS |" >> $GITHUB_STEP_SUMMARY
           echo "| Line Coverage | $LINE_COV% | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Requirement:** Branch coverage must be ≥ 90%" >> $GITHUB_STEP_SUMMARY
+          echo "**Requirement:** Branch coverage must be ≥ 95%" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📋 Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "View detailed coverage in the [Actions tab](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
