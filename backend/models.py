@@ -11,6 +11,10 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     role = db.Column(db.String(20), nullable=False, default="user")  # 'user' or 'admin'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # Profile fields
+    profile_picture_url = db.Column(db.String(500), nullable=True)
+    bio = db.Column(db.Text, nullable=True)  # Short blurb/details
+    class_year = db.Column(db.Integer, nullable=True)  # For students only
 
     def to_dict(self):
         return {
@@ -19,6 +23,9 @@ class User(db.Model):
             "email": self.email,
             "role": self.role,
             "created_at": self.created_at.isoformat() if self.created_at else None,
+            "profile_picture_url": self.profile_picture_url,
+            "bio": self.bio,
+            "class_year": self.class_year,
         }
 
 

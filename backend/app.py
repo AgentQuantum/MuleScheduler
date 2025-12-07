@@ -1,7 +1,12 @@
 import os
+from pathlib import Path
 
-from flask import Flask
+from dotenv import load_dotenv
+from flask import Flask, send_from_directory
 from flask_cors import CORS
+
+# Load environment variables from .env file
+load_dotenv()
 
 from database import db
 
@@ -9,6 +14,11 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///scheduler.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
+app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(__file__), "uploads", "profile_pictures")
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5MB max file size
+
+# Create uploads directory if it doesn't exist
+Path(app.config["UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
 
 db.init_app(app)
 CORS(app, origins=["http://localhost:5173", "http://localhost:3000"])
@@ -51,6 +61,12 @@ app.register_blueprint(assignments.bp)
 app.register_blueprint(weekly_overrides.bp)
 
 
+@app.route("/uploads/profile_pictures/<filename>")
+def serve_profile_picture(filename):
+    """Serve uploaded profile pictures"""
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+
 def init_db():
     """Initialize database tables and default data"""
     db.create_all()
@@ -59,6 +75,26 @@ def init_db():
         default_settings = GlobalSettings(max_workers_per_shift=3, max_hours_per_user_per_week=None)
         db.session.add(default_settings)
         db.session.commit()
+
+    # Seed demo accounts (for development and demo purposes)
+    demo_accounts = [
+        {"email": "admin@colby.edu", "name": "Demo Admin", "role": "admin"},
+        {"email": "student.one@colby.edu", "name": "Student One", "role": "user"},
+        {"email": "student.two@colby.edu", "name": "Student Two", "role": "user"},
+        {"email": "student.three@colby.edu", "name": "Student Three", "role": "user"},
+    ]
+
+    for account in demo_accounts:
+        existing = User.query.filter_by(email=account["email"]).first()
+        if not existing:
+            user = User(
+                name=account["name"],
+                email=account["email"],
+                role=account["role"],
+            )
+            db.session.add(user)
+
+    db.session.commit()
 
 
 if __name__ == "__main__":
