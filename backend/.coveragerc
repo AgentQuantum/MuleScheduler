@@ -8,6 +8,7 @@ omit =
     */migrations/*
     run.py
     seed_data.py
+    app.py
 
 [report]
 exclude_lines =
