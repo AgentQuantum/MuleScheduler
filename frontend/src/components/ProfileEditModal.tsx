@@ -31,10 +31,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ show, onHide, user,
       setRemovePicture(false);
       // Set preview to existing profile picture if available
       if (user.profile_picture_url) {
-        const fullUrl = user.profile_picture_url.startsWith('http')
-          ? user.profile_picture_url
-          : `http://localhost:5000${user.profile_picture_url}`;
-        setPreviewUrl(fullUrl);
+        setPreviewUrl(user.profile_picture_url);
       } else {
         setPreviewUrl(null);
       }

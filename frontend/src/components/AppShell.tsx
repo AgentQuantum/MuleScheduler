@@ -382,13 +382,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
                   name={user?.name || 'User'}
                   email={user?.email}
                   userId={user?.id}
-                  profilePhotoUrl={
-                    user?.profile_picture_url
-                      ? user.profile_picture_url.startsWith('http')
-                        ? user.profile_picture_url
-                        : `http://localhost:5000${user.profile_picture_url}`
-                      : undefined
-                  }
+                  profilePhotoUrl={user?.profile_picture_url || undefined}
                   size="md"
                 />
               </Dropdown.Toggle>
