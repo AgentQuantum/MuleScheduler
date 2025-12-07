@@ -7,8 +7,8 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
@@ -155,7 +155,7 @@ function Navbar() {
                 <small className="text-muted">{user?.email}</small>
                 <div className="mt-1">
                   <span className={`ms-chip ms-chip-${user?.role === 'admin' ? 'info' : 'accent'}`}>
-                    {user?.role === 'admin' ? 'Administrator' : 'Student'}
+                    {user?.role === 'admin' ? 'Admin' : 'Student'}
                   </span>
                 </div>
               </div>
