@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
@@ -170,6 +170,42 @@ const Icons = {
       <polyline points="6 9 12 15 18 9" />
     </svg>
   ),
+  Sun: () => (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  ),
+  Moon: () => (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  ),
 };
 
 // Simple MS Logo
@@ -205,6 +241,28 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Check localStorage first, then system preference
+    const stored = localStorage.getItem('theme');
+    if (stored) return stored === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  // Apply theme to document
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      root.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => !prev);
+  };
 
   const isActive = (path: string) => location.pathname === path;
   const isAdmin = user?.role === 'admin';
@@ -390,22 +448,33 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
               <Dropdown.Menu
                 style={{
                   borderRadius: '14px',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                  border: '1px solid #E5E7EB',
+                  boxShadow: 'var(--ms-shadow-md, 0 8px 24px rgba(0,0,0,0.12))',
+                  border: '1px solid var(--ms-border, #E5E7EB)',
                   padding: '8px',
+                  background: 'var(--ms-card-bg, #ffffff)',
                 }}
               >
                 <div
                   style={{
                     padding: '12px 16px',
-                    borderBottom: '1px solid #E5E7EB',
+                    borderBottom: '1px solid var(--ms-border, #E5E7EB)',
                     marginBottom: '8px',
                   }}
                 >
-                  <div style={{ fontWeight: 600, color: '#000' }}>{user?.name}</div>
-                  <div style={{ fontSize: '0.8rem', color: '#6B7280' }}>{user?.email}</div>
+                  <div style={{ fontWeight: 600, color: 'var(--ms-text-primary, #000)' }}>
+                    {user?.name}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--ms-text-muted, #6B7280)' }}>
+                    {user?.email}
+                  </div>
                   {user?.class_year && (
-                    <div style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '4px' }}>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--ms-text-muted, #6B7280)',
+                        marginTop: '4px',
+                      }}
+                    >
                       Class of {user.class_year}
                     </div>
                   )}
@@ -413,7 +482,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
                     <div
                       style={{
                         fontSize: '0.75rem',
-                        color: '#6B7280',
+                        color: 'var(--ms-text-muted, #6B7280)',
                         marginTop: '6px',
                         fontStyle: 'italic',
                       }}
@@ -439,16 +508,32 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
                     gap: '8px',
                     padding: '10px 16px',
                     marginBottom: '4px',
+                    color: 'var(--ms-text-primary, inherit)',
                   }}
                 >
                   <Icons.Settings />
                   Edit Profile
                 </Dropdown.Item>
                 <Dropdown.Item
+                  onClick={toggleDarkMode}
+                  style={{
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 16px',
+                    marginBottom: '4px',
+                    color: 'var(--ms-text-primary, inherit)',
+                  }}
+                >
+                  {isDarkMode ? <Icons.Sun /> : <Icons.Moon />}
+                  {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                </Dropdown.Item>
+                <Dropdown.Item
                   onClick={handleLogout}
                   style={{
                     borderRadius: '8px',
-                    color: '#EF4444',
+                    color: 'var(--ms-danger, #EF4444)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
