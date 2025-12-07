@@ -34,16 +34,14 @@ jest.mock('../utils/env', () => ({
 
 // Create a simple test component for login functionality
 function SimplifiedLoginComponent() {
-  const { login, demoLogin } = require('../contexts/AuthContext').useAuth();
-
   return (
     <div>
       <h1>MuleScheduler</h1>
       <p>Login to your Colby account</p>
-      <button onClick={() => login()}>Login with Colby</button>
+      <button onClick={() => mockLogin()}>Login with Colby</button>
       <div data-testid="demo-section">
-        <button onClick={() => demoLogin('admin@colby.edu')}>Demo Admin</button>
-        <button onClick={() => demoLogin('student.one@colby.edu')}>Student 1</button>
+        <button onClick={() => mockDemoLogin('admin@colby.edu')}>Demo Admin</button>
+        <button onClick={() => mockDemoLogin('student.one@colby.edu')}>Student 1</button>
       </div>
     </div>
   );
