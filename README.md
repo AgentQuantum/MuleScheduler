@@ -119,14 +119,34 @@ MuleScheduler/
 
 ## 📖 Usage Guide
 
-### 🔐 Authentication
+### 🔐 Authentication (Google OAuth – restricted to `@colby.edu`)
 
-Currently uses a simple stub authentication system:
-- **Login:** Enter any email address and select your role (user or admin)
-- **Admin Access:** Use `admin@colby.edu` or any email with role "admin"
-- **Student Access:** Use any email with role "user"
+MuleScheduler now uses Google OAuth 2.0. Emails must end with `@colby.edu`; non-Colby emails are rejected.
 
-> **Note:** In production, this should be replaced with Google OAuth restricted to `@colby.edu` emails.
+#### Setup Instructions
+
+1. **Create a Google OAuth client (Web application):**
+   - Go to Google Cloud Console → APIs & Services → Credentials.
+   - Create OAuth client ID (type: Web application).
+   - Add authorized redirect URI: `http://localhost:5000/api/auth/google/callback` (and your production URL).
+   - Copy the **Client ID** and **Client Secret**.
+
+2. **Backend env vars (required):**
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `GOOGLE_REDIRECT_URI` (optional; defaults to `http://localhost:5000/api/auth/google/callback`)
+   - `FRONTEND_ORIGIN` (optional; defaults to `http://localhost:5173`)
+
+3. **Frontend env vars:**
+   - `VITE_GOOGLE_CLIENT_ID` (not currently required for the flow, but keep for future use)
+
+#### Authentication Flow
+
+- User clicks **“Sign In with Colby”** on the login page.
+- Browser is redirected to Google OAuth; user signs in with `@colby.edu`.
+- Backend validates the ID token, enforces `@colby.edu`, creates the user if needed, and issues an app token.
+- Backend redirects back to the frontend with `?token=...`; the SPA stores it and uses it for API calls.
+- User roles (admin/user) remain in the database.
 
 ### 👨‍🎓 Student Worker Flow
 
