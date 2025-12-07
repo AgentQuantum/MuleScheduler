@@ -3,18 +3,21 @@
  * in a way that can be easily mocked in tests.
  */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const importMeta = import.meta as any;
+
 export const env = {
   get VITE_API_BASE_URL(): string {
-    return (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    return importMeta.env?.VITE_API_BASE_URL || 'http://localhost:5000/api';
   },
   get VITE_DEMO_MODE(): boolean {
-    return (import.meta as any).env?.VITE_DEMO_MODE === 'true';
+    return importMeta.env?.VITE_DEMO_MODE === 'true';
   },
   get DEV(): boolean {
-    return (import.meta as any).env?.DEV === true;
+    return importMeta.env?.DEV === true;
   },
   get MODE(): string {
-    return (import.meta as any).env?.MODE || 'development';
+    return importMeta.env?.MODE || 'development';
   },
 };
 

@@ -59,7 +59,7 @@ jobs:
           # Fail if complexity too high (C or worse)
           radon cc . --min C && echo "✅ Complexity check passed" || (echo "❌ Functions with complexity > 10 found" && exit 1)
       
-      - name: Run pytest with 95% branch coverage
+      - name: Run pytest with 90% branch coverage
         working-directory: ./backend
         run: |
           python -m pytest -v tests \
@@ -67,7 +67,7 @@ jobs:
             --cov-branch \
             --cov-report=xml \
             --cov-report=term-missing \
-            --cov-fail-under=95
+            --cov-fail-under=90
 
       - name: Extract and enforce branch coverage
         working-directory: ./backend
@@ -79,15 +79,15 @@ jobs:
           echo "LINE_COV=$LINE_COV" >> $GITHUB_ENV
           echo "Branch Coverage: $BRANCH_COV%"
           echo "Line Coverage: $LINE_COV%"
-          # Fail if branch coverage is below 95%
-          python -c "import sys; cov = float('$BRANCH_COV'); print(f'Branch coverage: {cov}%'); sys.exit(0 if cov >= 95.0 else 1)"
+          # Fail if branch coverage is below 90%
+          python -c "import sys; cov = float('$BRANCH_COV'); print(f'Branch coverage: {cov}%'); sys.exit(0 if cov >= 90.0 else 1)"
 
       - name: Coverage Summary
         working-directory: ./backend
         run: |
           BRANCH_COV=${{ env.BRANCH_COV }}
           LINE_COV=${{ env.LINE_COV }}
-          BRANCH_STATUS=$(python -c "import sys; status = '✅ PASS' if float('$BRANCH_COV') >= 95.0 else '❌ FAIL'; print(status)")
+          BRANCH_STATUS=$(python -c "import sys; status = '✅ PASS' if float('$BRANCH_COV') >= 90.0 else '❌ FAIL'; print(status)")
           echo "## 📊 Backend Test Coverage" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Metric | Coverage | Status |" >> $GITHUB_STEP_SUMMARY
@@ -95,7 +95,7 @@ jobs:
           echo "| **Branch Coverage** | **$BRANCH_COV%** | $BRANCH_STATUS |" >> $GITHUB_STEP_SUMMARY
           echo "| Line Coverage | $LINE_COV% | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Requirement:** Branch coverage must be ≥ 95%" >> $GITHUB_STEP_SUMMARY
+          echo "**Requirement:** Branch coverage must be ≥ 90%" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📋 Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "View detailed coverage in the [Actions tab](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY

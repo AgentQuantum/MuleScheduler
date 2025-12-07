@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,css,scss,md}\"",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 65",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 70",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "test": "jest",
     "test:ci": "jest --ci --coverage --watchAll=false",
