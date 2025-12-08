@@ -4,6 +4,9 @@ import { Dropdown } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
 import UserAvatar from './UserAvatar';
 import ProfileEditModal from './ProfileEditModal';
+import TeamModal from './TeamModal';
+import api from '../services/api';
+import { User } from '../types/scheduler';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -241,6 +244,9 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [teamUsers, setTeamUsers] = useState<User[]>([]);
+  const [teamLoading, setTeamLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Check localStorage first, then system preference
     const stored = localStorage.getItem('theme');
@@ -274,6 +280,27 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
 
   const handleProfileUpdate = (updatedUser: any) => {
     setUser(updatedUser);
+  };
+
+  const handleHelpCenter = () => {
+    const subject = encodeURIComponent('MuleScheduler Support Request');
+    const body = encodeURIComponent(
+      `Hello,\n\nI need help with MuleScheduler.\n\nName: ${user?.name || 'N/A'}\nEmail: ${user?.email || 'N/A'}\n\nIssue:\n\n`
+    );
+    window.location.href = `mailto:demo.admin@colby.edu?subject=${subject}&body=${body}`;
+  };
+
+  const handleTeamClick = async () => {
+    setTeamLoading(true);
+    setShowTeamModal(true);
+    try {
+      const response = await api.get('/users');
+      setTeamUsers(response.data);
+    } catch (err) {
+      console.error('Failed to load team:', err);
+    } finally {
+      setTeamLoading(false);
+    }
   };
 
   const adminNavItems = [
@@ -350,24 +377,14 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
           <div className="ms-sidebar-section">
             <div className="ms-sidebar-section-label">Quick Info</div>
             <div className="ms-sidebar-quick-stats">
-              <div className="ms-sidebar-stat">
-                <span className="ms-sidebar-stat-icon">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <line x1="12" y1="20" x2="12" y2="10" />
-                    <line x1="18" y1="20" x2="18" y2="4" />
-                    <line x1="6" y1="20" x2="6" y2="16" />
-                  </svg>
-                </span>
-                <span className="ms-sidebar-stat-text">Dashboard</span>
-              </div>
-              <div className="ms-sidebar-stat">
+              <div
+                className="ms-sidebar-stat"
+                onClick={handleTeamClick}
+                style={{ cursor: 'pointer' }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && handleTeamClick()}
+              >
                 <span className="ms-sidebar-stat-icon">
                   <svg
                     width="16"
@@ -391,7 +408,7 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
 
         {/* Bottom Items */}
         <div className="ms-sidebar-bottom-expanded">
-          <button className="ms-sidebar-nav-item-expanded help">
+          <button className="ms-sidebar-nav-item-expanded help" onClick={handleHelpCenter}>
             <span className="ms-sidebar-nav-icon">
               <Icons.Help />
             </span>
@@ -558,6 +575,14 @@ const AppShell: React.FC<AppShellProps> = ({ children, pageTitle }) => {
         onHide={() => setShowProfileModal(false)}
         user={user}
         onUpdate={handleProfileUpdate}
+      />
+
+      {/* Team Modal */}
+      <TeamModal
+        show={showTeamModal}
+        onHide={() => setShowTeamModal(false)}
+        users={teamUsers}
+        loading={teamLoading}
       />
     </div>
   );
