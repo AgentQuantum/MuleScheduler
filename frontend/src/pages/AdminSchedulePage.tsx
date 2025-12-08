@@ -41,10 +41,13 @@ function AdminSchedulePage() {
     return u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query);
   });
 
-  // Filter assignments by location
+  // Filter assignments and locations by the active location filter
   const filteredAssignments = locationFilter
     ? data.assignments.filter((a) => a.location_id === locationFilter)
     : data.assignments;
+  const visibleLocations = locationFilter
+    ? data.locations.filter((l) => l.id === locationFilter)
+    : data.locations;
 
   const handleWeekChange = (direction: 'prev' | 'next' | 'today') => {
     const current = new Date(weekStart);
@@ -112,14 +115,31 @@ function AdminSchedulePage() {
     updates: { userId?: number; locationId?: number; timeSlotId?: number }
   ) => {
     try {
+      let filterChanged = false;
+
+      // Handle user change
       if (updates.userId !== undefined) {
         await api.put(`/assignments/${assignmentId}`, { user_id: updates.userId });
       }
-      if (updates.locationId !== undefined || updates.timeSlotId !== undefined) {
+
+      // Handle location-only change (use simpler PUT endpoint)
+      if (updates.locationId !== undefined && updates.timeSlotId === undefined) {
+        await api.put(`/assignments/${assignmentId}`, { location_id: updates.locationId });
+
+        // Always switch the admin view to the new location so the moved
+        // shift remains visible (grid currently shows a single location).
+        if (locationFilter !== updates.locationId) {
+          setLocationFilter(updates.locationId);
+          filterChanged = true; // useScheduleData will refresh when filter changes
+        }
+      }
+
+      // Handle time slot change (with or without location) - use /move endpoint
+      if (updates.timeSlotId !== undefined) {
         const assignment = data.assignments.find((a) => a.id === assignmentId);
         if (assignment) {
           await api.put(`/assignments/${assignmentId}/move`, {
-            new_time_slot_id: updates.timeSlotId || assignment.time_slot_id,
+            new_time_slot_id: updates.timeSlotId,
             new_location_id: updates.locationId || assignment.location_id,
             new_start: new Date(weekStart).toISOString(),
             new_end: new Date(weekStart).toISOString(),
@@ -150,7 +170,11 @@ function AdminSchedulePage() {
       });
 
       showToast('success', 'Shift updated successfully!');
-      refreshData();
+      // Only manually refresh if we didn't change the filter
+      // (filter change triggers useEffect which refreshes automatically)
+      if (!filterChanged) {
+        refreshData();
+      }
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || 'Failed to update shift';
       showToast('danger', errorMsg);
@@ -624,7 +648,7 @@ function AdminSchedulePage() {
             <ShiftScheduleGrid
               assignments={filteredAssignments}
               users={filteredUsers}
-              locations={data.locations}
+              locations={visibleLocations}
               timeSlots={data.timeSlots}
               weekStart={weekStart}
               onAssignWorker={handleAssignWorker}
