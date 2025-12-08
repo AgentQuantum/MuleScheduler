@@ -128,4 +128,3 @@ describe('TeamModal', () => {
     expect(workerBadges).toHaveLength(2);
   });
 });
-
